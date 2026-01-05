@@ -1,0 +1,19 @@
+
+services:
+###> doctrine/doctrine-bundle ###
+  mysql:
+    image: mysql:8.0
+    container_name: aquaBiome
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: aquaBiome
+      MYSQL_USER: symfony
+      MYSQL_PASSWORD: symfony
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
