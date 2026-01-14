@@ -1,0 +1,65 @@
+/* Variables simples */
+:root {
+    --pink: #f06292;
+    --blue: #3f51b5;
+    --gray: #e0e0e0;
+}
+
+body {
+    margin: 0;
+    background-color: #222;
+    font-family: sans-serif;
+    display: flex;
+    justify-content: center;
+}
+
+/* Le "téléphone" */
+.smartphone-container {
+    width: 400px;
+    min-height: 100vh;
+    background: url("../image/fondaquabiome.png") no-repeat center top;
+    background-size: cover;
+    position: relative;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+/* Header blanc */
+.main-header {
+    background: white;
+    padding: 10px;
+    border-bottom: 5px solid var(--pink);
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-logo {
+    height: 60px;
+}
+
+/* Petit badge de la page */
+.active-tab-pill {
+    background: var(--gray);
+    padding: 5px 15px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+/* Icône menu */
+.nav-icon {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.nav-icon svg {
+    width: 30px;
+    height: 30px;
+}

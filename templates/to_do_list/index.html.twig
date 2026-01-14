@@ -3,73 +3,12 @@
 {% block title %}To-do List - AquaBiome{% endblock %}
 {% block page_name %}To do List{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/todolist.css') }}">
+{% endblock %}
+
 {% block body %}
-<style>
-    /* On garde tes styles et on ajoute quelques ajustements pour le JS */
-    .content-area {
-        padding: 20px 15px;
-        display: flex;
-        justify-content: center;
-        flex-grow: 1;
-    }
-
-    .todo-container {
-        width: 100%;
-        max-width: 400px; /* Taille smartphone */
-        background: rgba(255, 255, 255, 0.95);
-        border-radius: 20px;
-        padding: 25px;
-        box-shadow: 0 15px 35px rgba(0,0,0,0.15);
-        align-self: flex-start;
-    }
-
-    h2.todo-title { text-align: center; color: #4834d4; font-size: 1.4rem; margin-bottom: 25px; font-weight: 700; }
-    .todo-section { margin-bottom: 25px; }
-    .section-label { font-weight: 800; font-size: 1.1rem; margin-bottom: 15px; color: #2d3436; display: block; }
-
-    .todo-item {
-        display: flex;
-        align-items: center;
-        margin-bottom: 15px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .custom-checkbox {
-        width: 22px;
-        height: 22px;
-        border: 2px solid #7e84cc;
-        border-radius: 4px;
-        margin-right: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-    }
-
-    .todo-text { font-size: 1.05rem; color: #2d3436; font-weight: 500; }
-
-    /* État coché */
-    .todo-item.done .custom-checkbox { background: #7e84cc; border-color: #7e84cc; }
-    .todo-item.done .custom-checkbox::after { content: '✓'; color: white; font-weight: bold; font-size: 14px; }
-    .todo-item.done .todo-text { color: #a29bfe; text-decoration: line-through; opacity: 0.7; }
-
-    .add-item {
-        display: flex;
-        align-items: center;
-        color: #2d3436;
-        text-decoration: none;
-        font-weight: 600;
-        margin-top: 20px;
-        border: none;
-        background: none;
-        width: 100%;
-        cursor: pointer;
-        padding: 10px 0;
-    }
-    .plus-icon { font-size: 1.5rem; margin-right: 10px; }
-</style>
-
 <div class="content-area">
     <div class="todo-container">
         <h2 class="todo-title">To do list</h2>
@@ -103,43 +42,37 @@
         </button>
     </div>
 </div>
+{% endblock %}
 
-<script>
-    // 1. Fonction pour cocher / décocher et déplacer
-    function toggleTask(element) {
-        const todoList = document.getElementById('list-todo');
-        const doneList = document.getElementById('list-done');
-
-        if (element.classList.contains('done')) {
-            // Décocher : enlever la classe et remettre dans "A faire"
-            element.classList.remove('done');
-            todoList.appendChild(element);
-        } else {
-            // Cocher : ajouter la classe et mettre dans "Déjà faite"
-            element.classList.add('done');
-            doneList.appendChild(element);
-        }
-    }
-
-    // 2. Fonction pour ajouter une nouvelle tâche
-    function addNewTask() {
-        const taskText = prompt("Quelle tâche souhaitez-vous ajouter ?");
-        
-        if (taskText && taskText.trim() !== "") {
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        function toggleTask(element) {
             const todoList = document.getElementById('list-todo');
-            
-            // Création de l'élément HTML
-            const newItem = document.createElement('div');
-            newItem.className = 'todo-item';
-            newItem.onclick = function() { toggleTask(this); };
-            
-            newItem.innerHTML = `
-                <div class="custom-checkbox"></div>
-                <span class="todo-text">${taskText}</span>
-            `;
-            
-            todoList.appendChild(newItem);
+            const doneList = document.getElementById('list-done');
+
+            if (element.classList.contains('done')) {
+                element.classList.remove('done');
+                todoList.appendChild(element);
+            } else {
+                element.classList.add('done');
+                doneList.appendChild(element);
+            }
         }
-    }
-</script>
+
+        function addNewTask() {
+            const taskText = prompt("Quelle tâche souhaitez-vous ajouter ?");
+            if (taskText && taskText.trim() !== "") {
+                const todoList = document.getElementById('list-todo');
+                const newItem = document.createElement('div');
+                newItem.className = 'todo-item';
+                newItem.onclick = function() { toggleTask(this); };
+                newItem.innerHTML = `
+                    <div class="custom-checkbox"></div>
+                    <span class="todo-text">${taskText}</span>
+                `;
+                todoList.appendChild(newItem);
+            }
+        }
+    </script>
 {% endblock %}

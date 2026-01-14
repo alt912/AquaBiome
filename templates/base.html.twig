@@ -1,110 +1,53 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>{% block title %}AquaBiome{% endblock %}</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AquaBiome{% endblock %}</title>
+    
+    {% block stylesheets %}
+        <link rel="stylesheet" href="{{ asset('styles/base.css') }}">
+    {% endblock %}
+
+    {% block javascripts %}
+        {{ importmap('app') }}
+    {% endblock %}
+</head>
+<body>
+
+    <div class="smartphone-container">
         
-        <style>
-            :root {
-                --accent-pink: #f06292;
-                --icon-color: #3f51b5;
-                --pill-bg: #e0e0e0;
-                --mobile-width: 400px;
-            }
-
-            body {
-                margin: 0;
-                background: #222; /* Fond sombre pour faire ressortir le "téléphone" */
-                font-family: 'Segoe UI', sans-serif;
-                display: flex;
-                justify-content: center;
-            }
-                .smartphone-container {
-                    width: 100%;
-                    max-width: var(--mobile-width);
-                    min-height: 100vh;
-                    
-                    /* IMAGE DE FOND FIXÉE */
-                    background-image: url("{{ asset('image/fondaquabiome.png') }}");
-                    background-repeat: no-repeat;
-                    background-position: center top; /* Aligne le haut de l'image au haut du téléphone */
-                    background-size: cover; /* L'image remplit tout l'espace sans laisser de vide */
-                    background-attachment: scroll; /* L'image suit le mouvement du doigt sur mobile */
-                    
-                    position: relative;
-                    display: flex;
-                    flex-direction: column;
-                    box-shadow: 0 0 40px rgba(0,0,0,0.8);
-                    overflow-x: hidden;
-                }
-
-            /* Header */
-            .main-header { background: white; width: 100%; }
-            .header-container { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; }
-            .header-logo { height: 80px; }
-            .active-tab-pill { background: var(--pill-bg); padding: 6px 15px; border-radius: 50px; display: flex; align-items: center; gap: 8px; }
-            .pill-icon { font-size: 2rem; }
-            /* SVG-based nav icon, taille similaire à .pill-icon */
-            .nav-icon {
-                width: 2rem;
-                height: 2rem;
-                display: inline-block;
-                vertical-align: middle;
-                background: none;
-                border: 0;
-                padding: 0;
-            }
-            .nav-icon svg { width: 100%; height: 100%; }
-            /* Utility class for screen-reader-only text */
-            .sr-only {
-                position: absolute;
-                width: 1px;
-                height: 1px;
-                padding: 0;
-                margin: -1px;
-                overflow: hidden;
-                clip: rect(0, 0, 0, 0);
-                white-space: nowrap;
-                border: 0;
-            }
-            .header-bottom-border { height: 5px; background: var(--accent-pink); width: 100%; }
-
-            /* Scrollbar invisible pour un look plus "app" */
-            .smartphone-container::-webkit-scrollbar { display: none; }
-        </style>
-
-        {% block stylesheets %}{% endblock %}
-        {% block javascripts %}{{ importmap('app') }}{% endblock %}
-    </head>
-    <body>
-        <div class="smartphone-container">
-            <header class="main-header">
-                <div class="header-container">
-                    <img src="{{ asset('image/logo_aquabiome.png') }}" alt="Logo" class="header-logo">
-                    <div class="active-tab-pill">
-                        <span class="pill-icon">🏠</span>
-                        <span style="font-weight: 600; font-size: 0.9rem;">{% block page_name %}Accueil{% endblock %}</span>
-                    </div>
-                    <div class="nav-right" style="display:flex; gap:10px; align-items:center;">
-                        <span style="font-size: 2rem;">👤</span>
-                        <button class="nav-icon" aria-label="Menu" title="Menu">
-                            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" role="img" xmlns="http://www.w3.org/2000/svg">
-                                <circle cx="4" cy="6" r="1.5" stroke="var(--icon-color)" stroke-width="1.5" fill="none"/>
-                                <line x1="8.5" y1="6" x2="20" y2="6" stroke="var(--icon-color)" stroke-width="1.5" stroke-linecap="round"/>
-                                <circle cx="4" cy="12" r="1.5" stroke="var(--icon-color)" stroke-width="1.5" fill="none"/>
-                                <line x1="8.5" y1="12" x2="20" y2="12" stroke="var(--icon-color)" stroke-width="1.5" stroke-linecap="round"/>
-                                <circle cx="4" cy="18" r="1.5" stroke="var(--icon-color)" stroke-width="1.5" fill="none"/>
-                                <line x1="8.5" y1="18" x2="20" y2="18" stroke="var(--icon-color)" stroke-width="1.5" stroke-linecap="round"/>
-                            </svg>
-                        </button>
-                    </div>
+        <header class="main-header">
+            <div class="header-container">
+                {# Logo #}
+                <img src="{{ asset('image/logo_aquabiome.png') }}" class="header-logo" alt="Logo">
+                
+                {# Nom de la page #}
+                <div class="active-tab-pill">
+                    <span>🏠</span>
+                    <span>{% block page_name %}Accueil{% endblock %}</span>
                 </div>
-                <div class="header-bottom-border"></div>
-            </header>
 
+                {# Profil et Menu #}
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 1.5rem;">👤</span>
+                    <button class="nav-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="{{ 'var(--blue)' }}" stroke-width="2">
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        {# Contenu variable de tes pages #}
+        <main>
             {% block body %}{% endblock %}
-        </div>
-    </body>
+        </main>
+
+    </div>
+
+</body>
 </html>
