@@ -19,30 +19,30 @@
         
         <header class="main-header">
             <div class="header-container">
-                {# Logo #}
-                <img src="{{ asset('image/logo_aquabiome.png') }}" class="header-logo" alt="Logo">
-                
-                {# Nom de la page #}
+                {# Logo gauche #}
+                <a href="{{ path('homePage') }}" class="logo-link">
+                    <img src="{{ asset('image/logo_aquabiome.png') }}" class="header-logo" alt="Logo">
+                </a>
+
+                {# Badge central dynamique #}
                 <div class="active-tab-pill">
-                    <span>🏠</span>
-                    <span>{% block page_name %}Accueil{% endblock %}</span>
+                    <span class="pill-emoji">{% block page_icon %}🏠{% endblock %}</span>
+                    <span class="pill-text">{% block page_name %}Accueil{% endblock %}</span>
                 </div>
 
-                {# Profil et Menu #}
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <span style="font-size: 1.5rem;">👤</span>
-                    <button class="nav-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="{{ 'var(--blue)' }}" stroke-width="2">
-                            <line x1="3" y1="6" x2="21" y2="6"></line>
-                            <line x1="3" y1="12" x2="21" y2="12"></line>
-                            <line x1="3" y1="18" x2="21" y2="18"></line>
-                        </svg>
-                    </button>
+                {# Profil et Icône To-do List à droite #}
+                <div class="right-actions">
+                    <a href="{{ path('gestion_compte') }}" class="user-profile">
+                        👤
+                    </a>
+                    
+                    <a href="{{ path('toDoList') }}" class="nav-icon" title="To-do List">
+                        <img src="{{ asset('image/IcontoDoList.png') }}" alt="Menu">
+                    </a>
                 </div>
             </div>
         </header>
 
-        {# Contenu variable de tes pages #}
         <main>
             {% block body %}{% endblock %}
         </main>
