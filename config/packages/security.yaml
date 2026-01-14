@@ -36,13 +36,8 @@ security:
 
     # Contrôle d'accès : pour forcer la connexion sur certaines pages
     access_control:
-        # Permet d'accéder à la page de login sans être connecté
         - { path: ^/login, roles: PUBLIC_ACCESS }
-        # Force la connexion pour tout le reste du site (Accueil, Saisie, etc.)
-        - { path: ^/, roles: ROLE_USER }
-        - { path: ^/admin, roles: ROLE_ADMIN } # Seuls les admins accèdent à /admin
-        - { path: ^/login, roles: PUBLIC_ACCESS }
-        - { path: ^/, roles: ROLE_USER }
+        - { path: ^/, roles: PUBLIC_ACCESS }
 
 when@test:
     security:
