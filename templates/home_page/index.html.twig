@@ -7,19 +7,40 @@
 {% block stylesheets %}
     {{ parent() }}
     <link rel="stylesheet" href="{{ asset('styles/home.css') }}">
+    <style>
+        .chart-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+        .chart-card h3 {
+            margin-top: 0;
+            color: #333;
+            font-size: 1.1rem;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        /* Assure que le SVG prend toute la largeur */
+        svg {
+            display: block;
+            margin: 0 auto;
+            max-width: 100%;
+        }
+    </style>
 {% endblock %}
 
 {% block body %}
-
-
 <div class="home-content">
     
-   {# Header de bienvenue personnalisé #}
+    {# Header de bienvenue #}
     <section class="user-welcome">
         <div class="welcome-avatar">👤</div>
         <p>
-            Bienvenue à toi, 
-            <strong>{{ app.user ? app.user.userIdentifier : 'Invité' }}</strong>
+            Bienvenue sur votre tableau de bord, 
+            <strong>Invité</strong>
         </p>
     </section>
 
@@ -27,7 +48,7 @@
     <section class="alerts-section">
         <div class="alert-card">
             <h3>Alerte(s) & Notifications</h3>
-            <div style="height: 40px;">
+            <div style="min-height: 40px;">
                 {% if mesure is null %}
                     <p style="font-size: 0.8rem; color: #666;">Aucune donnée enregistrée pour le moment.</p>
                 {% else %}
@@ -39,7 +60,6 @@
 
     {# Grille des paramètres dynamiques #}
     <section class="stats-grid">
-        
         {# Carte Température #}
         <div class="stat-card">
             <span class="status-badge">Normal</span>
@@ -62,7 +82,7 @@
             <span class="stat-range">Plage: 6.5-7.5</span>
         </div>
 
-        {# Carte GH (Pleine largeur) #}
+        {# Carte GH #}
         <div class="stat-card full-width">
             <span class="status-badge">Normal</span>
             <div class="stat-icon" style="color: #00cec9;">💧</div>
@@ -72,17 +92,10 @@
             </div>
             <span class="stat-range">Plage: 6-12 °dH</span>
         </div>
-
     </section>
-</div>
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-{% endblock %}
-=======
 
-
-    <div class="charts-section" style="padding: 20px; display: flex; flex-direction: column; gap: 30px;">
-        
+    {# Section des Graphiques D3.js #}
+    <section class="charts-section" style="padding-top: 30px; display: flex; flex-direction: column; gap: 20px;">
         <div class="chart-card">
             <h3>📈 Suivi GH (Dureté totale)</h3>
             <div id="chart_gh"></div>
@@ -97,19 +110,18 @@
             <h3>⚠️ Éléments Toxiques (Nitrites / Ammonium)</h3>
             <div id="chart_toxic"></div>
         </div>
+    </section>
+</div>
 
-    </div>
+{# Scripts D3.js #}
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script>
+    // 1. Récupération des données du contrôleur
+    const rawData = {{ chartData|raw }};
+    console.log("Données pour D3.js :", rawData);
+</script>
 
-    {# Script pour passer les données à JS #}
-    <script>
-        const rawData = {{ chartData|raw }};
-    </script>
-    
-    {# Import de D3.js et de ton script de dessin #}
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="{{ asset('js/aquarium_charts.js') }}"></script>
+{# 2. Ton fichier de dessin personnalisé #}
+<script src="{{ asset('js/aquarium_charts.js') }}"></script>
+
 {% endblock %}
->>>>>>> Stashed changes
-=======
-{% endblock %}
->>>>>>> 4f60feea152426b9dc2fbc2a861b22f101341185
