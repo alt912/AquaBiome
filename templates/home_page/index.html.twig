@@ -7,14 +7,30 @@
 {% block stylesheets %}
     {{ parent() }}
     <link rel="stylesheet" href="{{ asset('styles/home.css') }}">
+    <style>
+        /* Petit ajout CSS pour les cartes de graphiques */
+        .chart-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        .chart-card h3 {
+            margin-top: 0;
+            color: #333;
+            font-size: 1.1rem;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+    </style>
 {% endblock %}
 
 {% block body %}
-
-
 <div class="home-content">
     
-   {# Header de bienvenue personnalisé #}
+   {# Header de bienvenue #}
     <section class="user-welcome">
         <div class="welcome-avatar">👤</div>
         <p>
@@ -39,7 +55,6 @@
 
     {# Grille des paramètres dynamiques #}
     <section class="stats-grid">
-        
         {# Carte Température #}
         <div class="stat-card">
             <span class="status-badge">Normal</span>
@@ -72,7 +87,38 @@
             </div>
             <span class="stat-range">Plage: 6-12 °dH</span>
         </div>
+    </section>
+<<<<<<< Updated upstream
+</div>
+=======
 
+    {# Section des Graphiques D3.js #}
+    <section class="charts-section" style="padding-top: 30px; display: flex; flex-direction: column; gap: 30px;">
+        <div class="chart-card">
+            <h3>📈 Suivi GH (Dureté totale)</h3>
+            <div id="chart_gh"></div>
+        </div>
+
+        <div class="chart-card">
+            <h3>🧪 Équilibre pH & KH</h3>
+            <div id="chart_ph_kh"></div>
+        </div>
+
+        <div class="chart-card">
+            <h3>⚠️ Éléments Toxiques (Nitrites / Ammonium)</h3>
+            <div id="chart_toxic"></div>
+        </div>
     </section>
 </div>
+
+{# Scripts D3.js #}
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script>
+    // Récupération des données du contrôleur
+    const rawData = {{ chartData|raw }};
+    console.log("Données pour D3.js :", rawData);
+</script>
+<script src="{{ asset('js/aquarium_charts.js') }}"></script>
+
+>>>>>>> Stashed changes
 {% endblock %}
