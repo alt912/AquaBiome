@@ -1,16 +1,81 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello HomePageController!{% endblock %}
+{% block title %}Accueil - AquaBiome{% endblock %}
+{% block page_name %}Accueil{% endblock %}
+{% block page_icon %}🏠{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/home.css') }}">
+{% endblock %}
 
 {% block body %}
-</style>
-<header>
-    <h1>Welcome to AquaBiome!</h1>
-</header>
 
-<div class="example-wrapper">
-    <p>This is the home page of your AquaBiome application.</p>
+
+<div class="home-content">
+    
+   {# Header de bienvenue personnalisé #}
+    <section class="user-welcome">
+        <div class="welcome-avatar">👤</div>
+        <p>
+            Bienvenue à toi, 
+            <strong>{{ app.user ? app.user.userIdentifier : 'Invité' }}</strong>
+        </p>
+    </section>
+
+    {# Section Alertes #}
+    <section class="alerts-section">
+        <div class="alert-card">
+            <h3>Alerte(s) & Notifications</h3>
+            <div style="height: 40px;">
+                {% if mesure is null %}
+                    <p style="font-size: 0.8rem; color: #666;">Aucune donnée enregistrée pour le moment.</p>
+                {% else %}
+                    <p style="font-size: 0.8rem; color: #27ae60;">Dernière mise à jour : {{ mesure.dateSaisie|date('d/m/Y H:i') }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    {# Grille des paramètres dynamiques #}
+    <section class="stats-grid">
+        
+        {# Carte Température #}
+        <div class="stat-card">
+            <span class="status-badge">Normal</span>
+            <div class="stat-icon" style="color: #ff7675;">°C</div>
+            <span class="stat-label">Température</span>
+            <div class="stat-value">
+                {{ (mesure and mesure.temperature is not null) ? mesure.temperature : '--' }}°C
+            </div>
+            <span class="stat-range">Plage: 22-26°C</span>
+        </div>
+
+        {# Carte pH #}
+        <div class="stat-card">
+            <span class="status-badge">Normal</span>
+            <div class="stat-icon" style="color: #74b9ff;">🧪</div>
+            <span class="stat-label">pH</span>
+            <div class="stat-value">
+                {{ (mesure and mesure.ph is not null) ? mesure.ph : '--' }}
+            </div>
+            <span class="stat-range">Plage: 6.5-7.5</span>
+        </div>
+
+        {# Carte GH (Pleine largeur) #}
+        <div class="stat-card full-width">
+            <span class="status-badge">Normal</span>
+            <div class="stat-icon" style="color: #00cec9;">💧</div>
+            <span class="stat-label">GH (Dureté totale)</span>
+            <div class="stat-value">
+                {{ (mesure and mesure.gh is not null) ? mesure.gh : '--' }} °dH
+            </div>
+            <span class="stat-range">Plage: 6-12 °dH</span>
+        </div>
+
+    </section>
 </div>
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 {% endblock %}
 =======
@@ -45,3 +110,6 @@
     <script src="{{ asset('js/aquarium_charts.js') }}"></script>
 {% endblock %}
 >>>>>>> Stashed changes
+=======
+{% endblock %}
+>>>>>>> 4f60feea152426b9dc2fbc2a861b22f101341185
