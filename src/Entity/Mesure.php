@@ -35,34 +35,21 @@ class Mesure
     #[ORM\Column(nullable: true)]
     private ?float $valeur = null;
 
-    // --- NOUVELLES COLONNES POUR LES GRAPHIQUES ---
     #[ORM\Column(nullable: true)]
     private ?float $nitrites = null;
 
     #[ORM\Column(nullable: true)]
     private ?float $ammonium = null;
-    // ----------------------------------------------
 
     #[ORM\ManyToOne(targetEntity: Aquarium::class, inversedBy: 'mesures')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Aquarium $aquarium = null;
 
-<<<<<<< Updated upstream
-    #[ORM\ManyToOne(inversedBy: 'mesures')]
-<<<<<<< HEAD
-    #[ORM\JoinColumn(nullable: false)]
-=======
     #[ORM\ManyToOne(targetEntity: Alerte::class, inversedBy: 'mesures')]
     #[ORM\JoinColumn(nullable: true)]
->>>>>>> Stashed changes
-=======
-    #[ORM\JoinColumn(nullable: true)]
->>>>>>> 4f60feea152426b9dc2fbc2a861b22f101341185
     private ?Alerte $alerte = null;
 
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'mesures')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $utilisateur = null;
+    // Note : La relation avec User a été supprimée ici pour ouvrir l'accès à tous.
 
     public function getId(): ?int
     {
@@ -146,7 +133,6 @@ class Mesure
         return $this;
     }
 
-    // --- GETTERS & SETTERS POUR NITRITES ---
     public function getNitrites(): ?float
     {
         return $this->nitrites;
@@ -158,7 +144,6 @@ class Mesure
         return $this;
     }
 
-    // --- GETTERS & SETTERS POUR AMMONIUM ---
     public function getAmmonium(): ?float
     {
         return $this->ammonium;
@@ -189,17 +174,6 @@ class Mesure
     public function setAlerte(?Alerte $alerte): static
     {
         $this->alerte = $alerte;
-        return $this;
-    }
-
-    public function getUtilisateur(): ?User
-    {
-        return $this->utilisateur;
-    }
-
-    public function setUtilisateur(?User $utilisateur): static
-    {
-        $this->utilisateur = $utilisateur;
         return $this;
     }
 }
