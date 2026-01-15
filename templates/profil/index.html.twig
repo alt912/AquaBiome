@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Profil - AquaBiome{% endblock %}
+
+{# On définit le nom et l'icône pour le header de base.html.twig #}
+{% block page_name %}Profil{% endblock %}
+{% block page_icon %}👤{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/profil.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="profil-content">
+    
+    <div class="profil-label">Profil</div>
+
+    {# Carte d'identité utilisateur dynamique #}
+    <section class="user-card">
+        <div class="avatar-large">👤</div>
+        
+        <div class="user-info">
+            {% if app.user %}
+                {# Affiche le pseudo ou l'identifiant réel de l'utilisateur #}
+                <h2>{{ app.user.userIdentifier }}</h2>
+                
+                {# Affiche l'email stocké en base de données #}
+                <p>{{ app.user.email }}</p>
+                
+                {# Lien de déconnexion officiel de Symfony #}
+                <a href="{{ path('app_logout') }}" class="btn-logout">Se Déconnecter</a>
+            {% else %}
+                {# Cas de secours si le mec arrive à accéder à la page sans être connecté #}
+                <h2>Invité</h2>
+                <p>Veuillez vous connecter</p>
+                <a href="{{ path('app_login') }}" class="btn-logout">Connexion</a>
+            {% endif %}
+        </div>
+    </section>
+
+    {# Section Paramètres / Historique #}
+    <section class="settings-section">
+        <div class="profil-label">Paramètres du Profil</div>
+        
+        <a href="#" class="history-item">
+            <span class="icon-history">🔄</span>
+            {# On peut même personnaliser le texte avec le nom de l'user #}
+            Historique de {{ app.user ? app.user.userIdentifier : 'mon compte' }}
+        </a>
+    </section>
+
+</div>
+{% endblock %}

@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\AquariumRepository;
+use App\Entity\User; 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -31,40 +32,32 @@ class Aquarium
     #[ORM\Column]
     private ?float $volumeLitre = null;
 
-    #[ORM\Column]
-    private ?\DateTime $derniereMaj = null;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $derniereMaj = null;
 
-    #[ORM\Column]
-    private ?\DateTime $dernierChangementEau = null;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $dernierChangementEau = null;
 
     /**
-     * @var Collection<int, PoissonInventaire>
+     * L'utilisateur propriétaire de l'aquarium (Relation ManyToOne)
      */
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $utilisateur = null;
+
     #[ORM\OneToMany(targetEntity: PoissonInventaire::class, mappedBy: 'aquarium')]
     private Collection $poissonInventaires;
 
-    /**
-     * @var Collection<int, Alerte>
-     */
     #[ORM\OneToMany(targetEntity: Alerte::class, mappedBy: 'aquarium')]
     private Collection $alertes;
 
-    /**
-     * @var Collection<int, Tache>
-     */
     #[ORM\OneToMany(targetEntity: Tache::class, mappedBy: 'aquarium')]
     private Collection $taches;
 
-    /**
-     * @var Collection<int, Mesure>
-     */
     #[ORM\OneToMany(targetEntity: Mesure::class, mappedBy: 'aquarium')]
     private Collection $mesures;
 
-    /**
-     * @var Collection<int, Nourriture>
-     */
-    #[ORM\OneToMany(targetEntity: Nourriture::class, mappedBy: 'Aquarium')]
+    #[ORM\OneToMany(targetEntity: Nourriture::class, mappedBy: 'aquarium')]
     private Collection $nourritures;
 
     public function __construct()
@@ -74,6 +67,7 @@ class Aquarium
         $this->taches = new ArrayCollection();
         $this->mesures = new ArrayCollection();
         $this->nourritures = new ArrayCollection();
+        $this->derniereMaj = new \DateTime();
     }
 
     public function getId(): ?int
@@ -89,7 +83,6 @@ class Aquarium
     public function setNom(string $nom): static
     {
         $this->nom = $nom;
-
         return $this;
     }
 
@@ -101,7 +94,6 @@ class Aquarium
     public function setDescription(string $description): static
     {
         $this->description = $description;
-
         return $this;
     }
 
@@ -113,7 +105,6 @@ class Aquarium
     public function setTypeEau(string $typeEau): static
     {
         $this->typeEau = $typeEau;
-
         return $this;
     }
 
@@ -125,7 +116,6 @@ class Aquarium
     public function setTemperature(float $temperature): static
     {
         $this->temperature = $temperature;
-
         return $this;
     }
 
@@ -137,181 +127,68 @@ class Aquarium
     public function setVolumeLitre(float $volumeLitre): static
     {
         $this->volumeLitre = $volumeLitre;
-
         return $this;
     }
 
-    public function getDerniereMaj(): ?\DateTime
+    public function getDerniereMaj(): ?\DateTimeInterface
     {
         return $this->derniereMaj;
     }
 
-    public function setDerniereMaj(\DateTime $derniereMaj): static
+    public function setDerniereMaj(\DateTimeInterface $derniereMaj): static
     {
         $this->derniereMaj = $derniereMaj;
-
         return $this;
     }
 
-    public function getDernierChangementEau(): ?\DateTime
+    public function getDernierChangementEau(): ?\DateTimeInterface
     {
         return $this->dernierChangementEau;
     }
 
-    public function setDernierChangementEau(\DateTime $dernierChangementEau): static
+    public function setDernierChangementEau(\DateTimeInterface $dernierChangementEau): static
     {
         $this->dernierChangementEau = $dernierChangementEau;
-
         return $this;
     }
 
-    /**
-     * @return Collection<int, PoissonInventaire>
-     */
+    // --- CORRECTION DU GETTER ET SETTER UTILISATEUR ---
+
+    public function getUtilisateur(): ?User
+    {
+        return $this->utilisateur;
+    }
+
+    public function setUtilisateur(?User $utilisateur): static
+    {
+        $this->utilisateur = $utilisateur;
+        return $this;
+    }
+
+    // --- COLLECTIONS (OneToMany) ---
+
     public function getPoissonInventaires(): Collection
     {
         return $this->poissonInventaires;
     }
 
-    public function addPoissonInventaire(PoissonInventaire $poissonInventaire): static
-    {
-        if (!$this->poissonInventaires->contains($poissonInventaire)) {
-            $this->poissonInventaires->add($poissonInventaire);
-            $poissonInventaire->setAquarium($this);
-        }
-
-        return $this;
-    }
-
-    public function removePoissonInventaire(PoissonInventaire $poissonInventaire): static
-    {
-        if ($this->poissonInventaires->removeElement($poissonInventaire)) {
-            // set the owning side to null (unless already changed)
-            if ($poissonInventaire->getAquarium() === $this) {
-                $poissonInventaire->setAquarium(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Alerte>
-     */
     public function getAlertes(): Collection
     {
         return $this->alertes;
     }
 
-    public function addAlerte(Alerte $alerte): static
-    {
-        if (!$this->alertes->contains($alerte)) {
-            $this->alertes->add($alerte);
-            $alerte->setAquarium($this);
-        }
-
-        return $this;
-    }
-
-    public function removeAlerte(Alerte $alerte): static
-    {
-        if ($this->alertes->removeElement($alerte)) {
-            // set the owning side to null (unless already changed)
-            if ($alerte->getAquarium() === $this) {
-                $alerte->setAquarium(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Tache>
-     */
     public function getTaches(): Collection
     {
         return $this->taches;
     }
 
-    public function addTach(Tache $tach): static
-    {
-        if (!$this->taches->contains($tach)) {
-            $this->taches->add($tach);
-            $tach->setAquarium($this);
-        }
-
-        return $this;
-    }
-
-    public function removeTach(Tache $tach): static
-    {
-        if ($this->taches->removeElement($tach)) {
-            // set the owning side to null (unless already changed)
-            if ($tach->getAquarium() === $this) {
-                $tach->setAquarium(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Mesure>
-     */
     public function getMesures(): Collection
     {
         return $this->mesures;
     }
 
-    public function addMesure(Mesure $mesure): static
-    {
-        if (!$this->mesures->contains($mesure)) {
-            $this->mesures->add($mesure);
-            $mesure->setAquarium($this);
-        }
-
-        return $this;
-    }
-
-    public function removeMesure(Mesure $mesure): static
-    {
-        if ($this->mesures->removeElement($mesure)) {
-            // set the owning side to null (unless already changed)
-            if ($mesure->getAquarium() === $this) {
-                $mesure->setAquarium(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Nourriture>
-     */
     public function getNourritures(): Collection
     {
         return $this->nourritures;
-    }
-
-    public function addNourriture(Nourriture $nourriture): static
-    {
-        if (!$this->nourritures->contains($nourriture)) {
-            $this->nourritures->add($nourriture);
-            $nourriture->setAquarium($this);
-        }
-
-        return $this;
-    }
-
-    public function removeNourriture(Nourriture $nourriture): static
-    {
-        if ($this->nourritures->removeElement($nourriture)) {
-            // set the owning side to null (unless already changed)
-            if ($nourriture->getAquarium() === $this) {
-                $nourriture->setAquarium(null);
-            }
-        }
-
-        return $this;
     }
 }

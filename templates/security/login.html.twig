@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}AquaBiome - Connexion{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/login.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="page-container">
+    <form method="post">
+        {# Message d'erreur si la connexion échoue #}
+        {% if error %}
+            <div class="error-message">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+        {% endif %}
+
+        <div class="page">
+            <div class="logo-container">
+                <img src="{{ asset('image/logo_aquabiome.png') }}" alt="Logo AquaBiome">
+            </div>
+
+            <div class="avatar">
+                <span class="line"></span>
+                <div class="circle">👤</div>
+                <span class="line"></span>
+            </div>
+
+            <div class="login-box">
+                <div class="input-group">
+                    <div class="icon-circle">👤</div>
+                    {# name="_username" est indispensable pour Symfony #}
+                    <input type="email" name="_username" value="{{ last_username }}" placeholder="Email" required autofocus>
+                </div>
+
+                <div class="input-group">
+                    <div class="icon-circle">🔒</div>
+                    {# name="_password" est indispensable pour Symfony #}
+                    <input type="password" name="_password" placeholder="Mot de passe" required>
+                </div>
+
+                {# Jeton de sécurité CSRF pour protéger le formulaire #}
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+            </div>
+
+            <button type="submit" class="btn">Se Connecter</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
