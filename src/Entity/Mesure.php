@@ -49,7 +49,7 @@ class Mesure
     #[ORM\JoinColumn(nullable: true)]
     private ?Alerte $alerte = null;
 
-    // La propriété $utilisateur a été supprimée pour permettre l'accès public
+    // Note : La propriété $utilisateur a été supprimée pour permettre l'accès public à tous.
 
     public function getId(): ?int
     {

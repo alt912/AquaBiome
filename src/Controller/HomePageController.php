@@ -12,15 +12,15 @@ final class HomePageController extends AbstractController
     #[Route('/', name: 'homePage')]
     public function index(MesureRepository $mesureRepo): Response
     {
-        // 1. On récupère la toute dernière mesure pour les boîtes de statistiques
+        // 1. On récupère la toute dernière mesure pour l'affichage des chiffres clés
         $derniereMesure = $mesureRepo->findOneBy([], ['dateSaisie' => 'DESC']);
 
-        // 2. On récupère TOUTES les mesures pour les graphiques D3.js
+        // 2. On récupère TOUTES les mesures triées par date pour les graphiques D3.js
         $toutesLesMesures = $mesureRepo->findBy([], ['dateSaisie' => 'ASC']);
 
         $historiqueData = [];
         
-        // 3. On prépare les données pour JavaScript
+        // 3. On prépare les données pour le JavaScript
         foreach ($toutesLesMesures as $m) {
             $historiqueData[] = [
                 'date' => $m->getDateSaisie() ? $m->getDateSaisie()->format('Y-m-d H:i') : null,
@@ -32,7 +32,7 @@ final class HomePageController extends AbstractController
             ];
         }
 
-        // 4. On envoie tout à la vue Twig
+        // 4. On envoie les données à la vue
         return $this->render('home_page/index.html.twig', [
             'mesure' => $derniereMesure,
             'chartData' => json_encode($historiqueData),
