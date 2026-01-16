@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\AquariumRepository;
-use App\Entity\User; 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -35,15 +34,8 @@ class Aquarium
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $derniereMaj = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dernierChangementEau = null;
-
-    /**
-     * L'utilisateur propriétaire de l'aquarium (Relation ManyToOne)
-     */
-    #[ORM\ManyToOne(targetEntity: User::class)]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $utilisateur = null;
 
     #[ORM\OneToMany(targetEntity: PoissonInventaire::class, mappedBy: 'aquarium')]
     private Collection $poissonInventaires;
@@ -91,7 +83,7 @@ class Aquarium
         return $this->description;
     }
 
-    public function setDescription(string $description): static
+    public function setDescription(?string $description): static
     {
         $this->description = $description;
         return $this;
@@ -146,26 +138,11 @@ class Aquarium
         return $this->dernierChangementEau;
     }
 
-    public function setDernierChangementEau(\DateTimeInterface $dernierChangementEau): static
+    public function setDernierChangementEau(?\DateTimeInterface $dernierChangementEau): static
     {
         $this->dernierChangementEau = $dernierChangementEau;
         return $this;
     }
-
-    // --- CORRECTION DU GETTER ET SETTER UTILISATEUR ---
-
-    public function getUtilisateur(): ?User
-    {
-        return $this->utilisateur;
-    }
-
-    public function setUtilisateur(?User $utilisateur): static
-    {
-        $this->utilisateur = $utilisateur;
-        return $this;
-    }
-
-    // --- COLLECTIONS (OneToMany) ---
 
     public function getPoissonInventaires(): Collection
     {
@@ -190,5 +167,13 @@ class Aquarium
     public function getNourritures(): Collection
     {
         return $this->nourritures;
+    }
+
+    /**
+     * Permet à EasyAdmin d'afficher le nom de l'aquarium dans les listes
+     */
+    public function __toString(): string
+    {
+        return $this->nom ?? 'Nouvel Aquarium';
     }
 }

@@ -17,11 +17,15 @@ final class AjoutDonneeController extends AbstractController
     public function index(Request $request, EntityManagerInterface $em, AquariumRepository $aquariumRepo): Response
     {
         if ($request->isMethod('POST')) {
-            
-            // On récupère le premier aquarium disponible puisqu'il n'y a plus d'utilisateur
+            $ghSaisi = (float)$request->request->get('gh');
+
+            // --- SÉCURITÉ SERVEUR ---
+            if ($ghSaisi > 100) {
+                $this->addFlash('error', 'Le GH est faux (trop élevé). La valeur maximale autorisée est 100.');
+                return $this->render('ajout_donnee/index.html.twig');
+            }
+
             $aquarium = $aquariumRepo->findOneBy([]);
-            
-            // Si aucun aquarium n'existe, on en crée un par défaut
             if (!$aquarium) {
                 $aquarium = new Aquarium();
                 $aquarium->setNom("Mon Aquarium");
@@ -35,33 +39,27 @@ final class AjoutDonneeController extends AbstractController
             }
 
             $mesure = new Mesure();
-
-            // Gestion de la date
             $dateForm = $request->request->get('date');
             $dateSaisie = new \DateTime($dateForm ?: 'now');
             $dateSaisie->setTime((int)date('H'), (int)date('i'), (int)date('s')); 
             
             $mesure->setDateSaisie($dateSaisie);
-
-            // Hydratation des données classiques
             $mesure->setTemperature((float)$request->request->get('temperature'));
             $mesure->setPh((float)$request->request->get('ph'));
             $mesure->setChlore((float)$request->request->get('chlore'));
-            $mesure->setGh((int)$request->request->get('gh'));
+            $mesure->setGh($ghSaisi);
             $mesure->setKh((int)$request->request->get('kh'));
-
-            // --- AJOUT POUR LES GRAPHIQUES ---
-            // On récupère les nouveaux champs nitrites et ammonium
-            $mesure->setNitrites((float)$request->request->get('nitrites'));
+            
+            // On s'assure que le nom correspond au formulaire ('nitrite' dans le twig)
+            $mesure->setNitrites((float)$request->request->get('nitrite'));
             $mesure->setAmmonium((float)$request->request->get('ammonium'));
             
-            // On lie la mesure à l'aquarium (mais plus à l'utilisateur)
             $mesure->setAquarium($aquarium);
 
             $em->persist($mesure);
             $em->flush();
 
-            // On redirige vers l'accueil
+            $this->addFlash('success', 'Mesures enregistrées avec succès !');
             return $this->redirectToRoute('homePage');
         }
 

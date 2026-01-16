@@ -6,23 +6,42 @@
 {% block stylesheets %}
     {{ parent() }}
     <link rel="stylesheet" href="{{ asset('styles/ajout.css') }}">
+    <style>
+        .alert-error {
+            background-color: #e74a3b;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+    </style>
 {% endblock %}
 
 {% block body %}
 <div class="content-area">
     <div class="glass-card">
+        
+        {# --- ZONE NOTIFICATION (SYMFONY) --- #}
+        {% for message in app.flashes('error') %}
+            <div class="alert-error">⚠️ {{ message }}</div>
+        {% endfor %}
+
+        {# --- ZONE ERREUR (JAVASCRIPT) --- #}
+        <div id="gh-error" class="alert-error" style="display: none;"></div>
+        
         <div class="hero-text">
             <h1>Suivi des paramètres</h1>
             <p>Mesures de votre aquarium</p>
         </div>
 
-        {# 1. L'action pointe maintenant vers ton contrôleur #}
-        <form action="{{ path('ajoutDonnee') }}" method="POST">
+        <form action="{{ path('ajoutDonnee') }}" method="POST" data-turbo="false" id="form-mesure">
             
             <div class="section-title">Informations Générales</div>
             <div class="form-group">
                 <div class="label-row">Date de la saisie</div>
-                {# 2. Ajout de name="date" #}
                 <input type="date" name="date" class="form-input" value="{{ "now"|date("Y-m-d") }}">
             </div>
 
@@ -30,34 +49,34 @@
             
             <div class="form-group">
                 <div class="label-row">Température <span class="unit">°C</span></div>
-                {# 3. Ajout de name="temperature" #}
                 <input type="number" step="0.1" name="temperature" class="form-input" placeholder="Ex: 25.5" required>
             </div>
 
             <div class="form-group">
                 <div class="label-row">PH <span class="unit">0-14</span></div>
-                {# 4. Ajout de name="ph" #}
                 <input type="number" step="0.1" name="ph" class="form-input" placeholder="Ex: 8.2" required>
             </div>
 
             <div class="form-group">
                 <div class="label-row">Chlore (Cl) <span class="unit">mg/l</span></div>
-                {# 5. Ajout de name="chlore" #}
                 <input type="number" step="0.1" name="chlore" class="form-input" placeholder="0">
             </div>
 
-            {# Note: Si tu veux gérer NO2, il faudra ajouter une colonne nitrite dans ton entité Mesure.php #}
             <div class="form-group">
                 <div class="label-row">Nitrite (NO2) <span class="unit">mg/l</span></div>
                 <input type="number" step="0.01" name="nitrite" class="form-input" placeholder="0">
             </div>
 
             <div class="form-group">
+                <div class="label-row">Ammonium (NH4) <span class="unit">mg/l</span></div>
+                <input type="number" step="0.01" name="ammonium" class="form-input" placeholder="0">
+            </div>
+
+            <div class="form-group">
                 <div class="label-row">GH / KH <span class="unit">°d</span></div>
                 <div style="display: flex; gap: 10px;">
-                    {# 6. Ajout de name="gh" et name="kh" #}
-                    <input type="number" name="gh" class="form-input" placeholder="GH">
-                    <input type="number" name="kh" class="form-input" placeholder="KH">
+                    <input type="number" step="0.1" name="gh" id="gh-field" class="form-input" placeholder="GH" max="100">
+                    <input type="number" step="0.1" name="kh" class="form-input" placeholder="KH">
                 </div>
             </div>
 
@@ -71,10 +90,22 @@
 {% block javascripts %}
     {{ parent() }}
     <script>
-        // Empêche la saisie de texte dans les champs numériques
-        document.querySelectorAll('input[type="number"]').forEach(input => {
-            input.addEventListener('keypress', (e) => {
-                if (!/[0-9.,]/.test(e.key)) e.preventDefault();
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('form-mesure');
+            const ghInput = document.getElementById('gh-field');
+            const errorDiv = document.getElementById('gh-error');
+
+            form.addEventListener('submit', (e) => {
+                const val = parseFloat(ghInput.value);
+
+                if (val > 100) {
+                    e.preventDefault(); // Bloque l'envoi
+                    errorDiv.textContent = "Le GH est trop élevé (max 100). Veuillez corriger.";
+                    errorDiv.style.display = 'block';
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    errorDiv.style.display = 'none';
+                }
             });
         });
     </script>
