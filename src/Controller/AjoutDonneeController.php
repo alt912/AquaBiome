@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\Mesure;
 use App\Entity\Aquarium;
 use App\Repository\AquariumRepository;
-use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,21 +14,17 @@ use Symfony\Component\Routing\Attribute\Route;
 final class AjoutDonneeController extends AbstractController
 {
     #[Route('/ajoutDonnee', name: 'ajoutDonnee')]
-    public function index(Request $request, EntityManagerInterface $em, AquariumRepository $aquariumRepo, UserRepository $userRepo): Response
+    public function index(Request $request, EntityManagerInterface $em, AquariumRepository $aquariumRepo): Response
     {
         if ($request->isMethod('POST')) {
-            $user = $userRepo->find(1);
             
-            if (!$user) {
-                return new Response("Erreur : L'utilisateur avec l'ID 1 n'existe pas.");
-            }
-
-            $aquarium = $aquariumRepo->findOneBy(['utilisateur' => $user]);
+            // On récupère le premier aquarium disponible puisqu'il n'y a plus d'utilisateur
+            $aquarium = $aquariumRepo->findOneBy([]);
             
+            // Si aucun aquarium n'existe, on en crée un par défaut
             if (!$aquarium) {
                 $aquarium = new Aquarium();
                 $aquarium->setNom("Mon Aquarium");
-                $aquarium->setUtilisateur($user);
                 $aquarium->setTemperature(25);
                 $aquarium->setVolumeLitre(100);
                 $aquarium->setTypeEau("Douce");
@@ -41,23 +36,26 @@ final class AjoutDonneeController extends AbstractController
 
             $mesure = new Mesure();
 
-            // --- MODIFICATION ICI ---
-            // On récupère la date du formulaire, mais on lui ajoute l'HEURE actuelle 
-            // pour que le tri DESC dans l'accueil fonctionne parfaitement.
+            // Gestion de la date
             $dateForm = $request->request->get('date');
             $dateSaisie = new \DateTime($dateForm ?: 'now');
             $dateSaisie->setTime((int)date('H'), (int)date('i'), (int)date('s')); 
             
             $mesure->setDateSaisie($dateSaisie);
-            // ------------------------
 
+            // Hydratation des données classiques
             $mesure->setTemperature((float)$request->request->get('temperature'));
             $mesure->setPh((float)$request->request->get('ph'));
             $mesure->setChlore((float)$request->request->get('chlore'));
             $mesure->setGh((int)$request->request->get('gh'));
             $mesure->setKh((int)$request->request->get('kh'));
+
+            // --- AJOUT POUR LES GRAPHIQUES ---
+            // On récupère les nouveaux champs nitrites et ammonium
+            $mesure->setNitrites((float)$request->request->get('nitrites'));
+            $mesure->setAmmonium((float)$request->request->get('ammonium'));
             
-            $mesure->setUtilisateur($user);
+            // On lie la mesure à l'aquarium (mais plus à l'utilisateur)
             $mesure->setAquarium($aquarium);
 
             $em->persist($mesure);
