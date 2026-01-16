@@ -19,28 +19,27 @@ class Alerte
     #[ORM\Column(length: 255)]
     private ?string $nom = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $unite = null;
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $messageAlerte = null;
 
-    #[ORM\Column]
-    private ?\DateTime $dateAlerte = null;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $dateAlerte = null;
 
     #[ORM\ManyToOne(inversedBy: 'alertes')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Aquarium $aquarium = null;
 
-    /**
-     * @var Collection<int, Mesure>
-     */
     #[ORM\OneToMany(targetEntity: Mesure::class, mappedBy: 'alerte')]
     private Collection $mesures;
 
     public function __construct()
     {
         $this->mesures = new ArrayCollection();
+        // La date se met automatiquement à "maintenant"
+        $this->dateAlerte = new \DateTime(); 
     }
 
     public function getId(): ?int
@@ -56,7 +55,6 @@ class Alerte
     public function setNom(string $nom): static
     {
         $this->nom = $nom;
-
         return $this;
     }
 
@@ -65,10 +63,9 @@ class Alerte
         return $this->unite;
     }
 
-    public function setUnite(string $unite): static
+    public function setUnite(?string $unite): static
     {
         $this->unite = $unite;
-
         return $this;
     }
 
@@ -80,19 +77,17 @@ class Alerte
     public function setMessageAlerte(string $messageAlerte): static
     {
         $this->messageAlerte = $messageAlerte;
-
         return $this;
     }
 
-    public function getDateAlerte(): ?\DateTime
+    public function getDateAlerte(): ?\DateTimeInterface
     {
         return $this->dateAlerte;
     }
 
-    public function setDateAlerte(\DateTime $dateAlerte): static
+    public function setDateAlerte(\DateTimeInterface $dateAlerte): static
     {
         $this->dateAlerte = $dateAlerte;
-
         return $this;
     }
 
@@ -104,37 +99,11 @@ class Alerte
     public function setAquarium(?Aquarium $aquarium): static
     {
         $this->aquarium = $aquarium;
-
         return $this;
     }
 
-    /**
-     * @return Collection<int, Mesure>
-     */
     public function getMesures(): Collection
     {
         return $this->mesures;
-    }
-
-    public function addMesure(Mesure $mesure): static
-    {
-        if (!$this->mesures->contains($mesure)) {
-            $this->mesures->add($mesure);
-            $mesure->setAlerte($this);
-        }
-
-        return $this;
-    }
-
-    public function removeMesure(Mesure $mesure): static
-    {
-        if ($this->mesures->removeElement($mesure)) {
-            // set the owning side to null (unless already changed)
-            if ($mesure->getAlerte() === $this) {
-                $mesure->setAlerte(null);
-            }
-        }
-
-        return $this;
     }
 }

@@ -23,11 +23,22 @@
             padding-bottom: 10px;
             margin-bottom: 15px;
         }
-        /* Assure que le SVG prend toute la largeur */
+        /* Assure que le SVG est centré et réactif */
         svg {
             display: block;
             margin: 0 auto;
             max-width: 100%;
+        }
+        /* Style pour les messages d'erreur flash */
+        .alert-flash {
+            background-color: #ff7675;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            border-left: 5px solid #d63031;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
     </style>
 {% endblock %}
@@ -35,6 +46,13 @@
 {% block body %}
 <div class="home-content">
     
+    {# --- AFFICHAGE DES ERREURS (Flash Messages) --- #}
+    {% for message in app.flashes('error') %}
+        <div class="alert-flash">
+            ⚠️ {{ message }}
+        </div>
+    {% endfor %}
+
     {# Header de bienvenue #}
     <section class="user-welcome">
         <div class="welcome-avatar">👤</div>
@@ -44,23 +62,24 @@
         </p>
     </section>
 
-    {# Section Alertes #}
+    {# Section Alertes et Date de mise à jour #}
     <section class="alerts-section">
         <div class="alert-card">
-            <h3>Alerte(s) & Notifications</h3>
+            <h3>Dernière activité</h3>
             <div style="min-height: 40px;">
                 {% if mesure is null %}
-                    <p style="font-size: 0.8rem; color: #666;">Aucune donnée enregistrée pour le moment.</p>
+                    <p style="font-size: 0.9rem; color: #666;">Aucune mesure enregistrée en base de données.</p>
                 {% else %}
-                    <p style="font-size: 0.8rem; color: #27ae60;">Dernière mise à jour : {{ mesure.dateSaisie|date('d/m/Y H:i') }}</p>
+                    <p style="font-size: 0.9rem; color: #27ae60;">
+                        Dernier relevé le : <strong>{{ mesure.dateSaisie|date('d/m/Y à H:i') }}</strong>
+                    </p>
                 {% endif %}
             </div>
         </div>
     </section>
 
-    {# Grille des paramètres dynamiques #}
+    {# Grille des paramètres (Chiffres clés) #}
     <section class="stats-grid">
-        {# Carte Température #}
         <div class="stat-card">
             <span class="status-badge">Normal</span>
             <div class="stat-icon" style="color: #ff7675;">°C</div>
@@ -71,7 +90,6 @@
             <span class="stat-range">Plage: 22-26°C</span>
         </div>
 
-        {# Carte pH #}
         <div class="stat-card">
             <span class="status-badge">Normal</span>
             <div class="stat-icon" style="color: #74b9ff;">🧪</div>
@@ -82,7 +100,6 @@
             <span class="stat-range">Plage: 6.5-7.5</span>
         </div>
 
-        {# Carte GH #}
         <div class="stat-card full-width">
             <span class="status-badge">Normal</span>
             <div class="stat-icon" style="color: #00cec9;">💧</div>
@@ -97,31 +114,35 @@
     {# Section des Graphiques D3.js #}
     <section class="charts-section" style="padding-top: 30px; display: flex; flex-direction: column; gap: 20px;">
         <div class="chart-card">
-            <h3>📈 Suivi GH (Dureté totale)</h3>
+            <h3>📈 Historique GH (Dureté)</h3>
             <div id="chart_gh"></div>
         </div>
 
         <div class="chart-card">
-            <h3>🧪 Équilibre pH & KH</h3>
+            <h3>⚖️ Équilibre pH & KH</h3>
             <div id="chart_ph_kh"></div>
         </div>
 
         <div class="chart-card">
-            <h3>⚠️ Éléments Toxiques (Nitrites / Ammonium)</h3>
+            <h3>☢️ Toxiques (Nitrites & Ammonium)</h3>
             <div id="chart_toxic"></div>
         </div>
     </section>
 </div>
 
-{# Scripts D3.js #}
+{# CHARGEMENT DES SCRIPTS #}
+
+{# 1. Librairie D3.js #}
 <script src="https://d3js.org/d3.v7.min.js"></script>
+
+{# 2. Passage des données PHP vers JS #}
 <script>
-    // 1. Récupération des données du contrôleur
+    // rawData contient tout l'historique trié par date
     const rawData = {{ chartData|raw }};
-    console.log("Données pour D3.js :", rawData);
+    console.log("Données chargées :", rawData);
 </script>
 
-{# 2. Ton fichier de dessin personnalisé #}
-<script src="{{ asset('js/aquarium_charts.js') }}"></script>
+{# 3. Ton script de dessin (avec paramètre de version pour éviter le cache) #}
+<script src="{{ asset('js/aquarium_charts.js') }}?v={{ "now"|date('U') }}"></script>
 
 {% endblock %}
