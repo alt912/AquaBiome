@@ -64,6 +64,19 @@
 
     {# Section Alertes et Date de mise à jour #}
     <section class="alerts-section">
+        
+        {# -- NOUVEAU : Affichage des ALERTES BOOTSTRAP -- #}
+        {% if alertes is defined and alertes is not empty %}
+            <div class="mb-4">
+                {% for alerte in alertes %}
+                    <div class="alert alert-{{ alerte.type }} alert-dismissible fade show" role="alert">
+                        <strong>Alerte :</strong> {{ alerte.message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
         <div class="alert-card">
             <h3>Dernière activité</h3>
             <div style="min-height: 40px;">

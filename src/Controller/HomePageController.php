@@ -33,9 +33,42 @@ final class HomePageController extends AbstractController
             ];
         }
 
-        // 4. On envoie les données à la vue
+        // 4. Gestion des ALERTES (Nouveau)
+        $alertes = [];
+
+        if ($derniereMesure) {
+            // Vérification pH (Idéal : 6.5 - 7.5)
+            $ph = $derniereMesure->getPh();
+            if ($ph !== null && ($ph < 6.5 || $ph > 7.5)) {
+                $alertes[] = [
+                    'type' => 'warning', // classe Bootstrap 'alert-warning'
+                    'message' => "Attention : Le pH est anormal ($ph). La valeur idéale est comprise entre 6.5 et 7.5."
+                ];
+            }
+
+            // Vérification Température (Idéal : 24 - 28)
+            $temp = $derniereMesure->getTemperature();
+            if ($temp !== null && ($temp < 24 || $temp > 28)) {
+                $alertes[] = [
+                    'type' => 'danger', // classe Bootstrap 'alert-danger'
+                    'message' => "Attention : Température critique ($temp °C). Elle doit être comprise entre 24°C et 28°C."
+                ];
+            }
+
+            // Vérification Nitrites (doit être proche de 0, alerte si > 0.5)
+            $nitrites = $derniereMesure->getNitrites();
+            if ($nitrites !== null && $nitrites > 0.5) {
+                $alertes[] = [
+                    'type' => 'danger',
+                    'message' => "Danger : Taux de nitrites élevé ($nitrites mg/L). Risque toxique pour les poissons !"
+                ];
+            }
+        }
+
+        // 5. On envoie les données à la vue
         return $this->render('home_page/index.html.twig', [
             'mesure' => $derniereMesure,
+            'alertes' => $alertes, // On passe les alertes à la vue
             'chartData' => json_encode($historiqueData),
         ]);
     }
