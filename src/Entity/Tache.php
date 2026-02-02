@@ -39,6 +39,25 @@ class Tache
     #[ORM\JoinColumn(nullable: false)]
     private ?User $utilisateur = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $recurrenceJours = null;
+
+    public function __construct()
+    {
+        $this->status = 'À faire';
+    }
+
+    public function getRecurrenceJours(): ?int
+    {
+        return $this->recurrenceJours;
+    }
+
+    public function setRecurrenceJours(?int $recurrenceJours): static
+    {
+        $this->recurrenceJours = $recurrenceJours;
+        return $this;
+    }
+
     public function getId(): ?int
     {
         return $this->id;

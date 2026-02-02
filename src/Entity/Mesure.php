@@ -46,7 +46,7 @@ class Mesure
     private ?Aquarium $aquarium = null;
 
     #[ORM\ManyToOne(targetEntity: Alerte::class, inversedBy: 'mesures')]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?Alerte $alerte = null;
 
     // Note : La propriété $utilisateur a été supprimée pour permettre l'accès public à tous.

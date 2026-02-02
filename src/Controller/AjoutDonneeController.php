@@ -17,7 +17,7 @@ final class AjoutDonneeController extends AbstractController
     public function index(Request $request, EntityManagerInterface $em, AquariumRepository $aquariumRepo): Response
     {
         if ($request->isMethod('POST')) {
-            $ghSaisi = (float)$request->request->get('gh');
+            $ghSaisi = (float) $request->request->get('gh');
 
             // --- SÉCURITÉ SERVEUR ---
             if ($ghSaisi > 100) {
@@ -41,20 +41,58 @@ final class AjoutDonneeController extends AbstractController
             $mesure = new Mesure();
             $dateForm = $request->request->get('date');
             $dateSaisie = new \DateTime($dateForm ?: 'now');
-            $dateSaisie->setTime((int)date('H'), (int)date('i'), (int)date('s')); 
-            
+            $dateSaisie->setTime((int) date('H'), (int) date('i'), (int) date('s'));
+
             $mesure->setDateSaisie($dateSaisie);
-            $mesure->setTemperature((float)$request->request->get('temperature'));
-            $mesure->setPh((float)$request->request->get('ph'));
-            $mesure->setChlore((float)$request->request->get('chlore'));
+            $mesure->setTemperature((float) $request->request->get('temperature'));
+            $mesure->setPh((float) $request->request->get('ph'));
+            $mesure->setChlore((float) $request->request->get('chlore'));
             $mesure->setGh($ghSaisi);
-            $mesure->setKh((int)$request->request->get('kh'));
-            
+            $mesure->setKh((int) $request->request->get('kh'));
+
             // On s'assure que le nom correspond au formulaire ('nitrite' dans le twig)
-            $mesure->setNitrites((float)$request->request->get('nitrite'));
-            $mesure->setAmmonium((float)$request->request->get('ammonium'));
-            
+            $mesure->setNitrites((float) $request->request->get('nitrite'));
+            $mesure->setAmmonium((float) $request->request->get('ammonium'));
+
             $mesure->setAquarium($aquarium);
+
+            // --- GESTION DES ALERTES (Persistance en BDD) ---
+            // On vérifie les seuils et on crée une entité Alerte si nécessaire
+
+            $alerteGeneree = null;
+            $messagesAlerte = [];
+
+            // 1. Vérification pH (Idéal : 6.5 - 7.5)
+            $ph = $mesure->getPh();
+            if ($ph < 6.5 || $ph > 7.5) {
+                $messagesAlerte[] = "pH anormal ($ph)";
+            }
+
+            // 2. Vérification Température (Idéal : 24 - 28)
+            $temp = $mesure->getTemperature();
+            if ($temp < 24 || $temp > 28) {
+                $messagesAlerte[] = "Température critique ($temp °C)";
+            }
+
+            // 3. Vérification Nitrites (Alerte si > 0.5)
+            $nitrites = $mesure->getNitrites();
+            if ($nitrites > 0.5) {
+                $messagesAlerte[] = "Nitrites élevés ($nitrites mg/L)";
+            }
+
+            // Si on a détecté des problèmes, on crée une Alerte en BDD
+            if (!empty($messagesAlerte)) {
+                $alerte = new \App\Entity\Alerte();
+                $alerte->setNom("Alerte Mesure #" . (new \DateTime())->format('dmY-Hi'));
+                $alerte->setMessageAlerte(implode(" | ", $messagesAlerte));
+                $alerte->setDateAlerte(new \DateTime()); // Date actuelle
+                $alerte->setAquarium($aquarium);
+
+                // On lie l'alerte à la mesure
+                $mesure->setAlerte($alerte);
+
+                $em->persist($alerte);
+            }
 
             $em->persist($mesure);
             $em->flush();
