@@ -146,24 +146,34 @@
         </div>
     </section>
 
-    {# Section des Graphiques D3.js #}
-    <section class="charts-section" style="padding-top: 30px; display: flex; flex-direction: column; gap: 20px;">
-        <div class="chart-card">
-            <h3>📈 Historique GH (Dureté)</h3>
-            <div id="chart_gh"></div>
+    <div class="content-area" style="overflow-y: auto; padding-bottom: 100px;">
+    
+        <div class="stats-grid">
+            <div class="stat-card full-width" style="background: white !important;">
+                
+                {# Barre d'onglets #}
+                <div class="tabs-header" style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <button class="tab-btn active" onclick="openTab(event, 'tab-gh')">GH</button>
+                    <button class="tab-btn" onclick="openTab(event, 'tab-ph')">pH / KH</button>
+                    <button class="tab-btn" onclick="openTab(event, 'tab-toxic')">Toxines</button>
+                </div>
+    
+                {# Contenu des graphiques uniquement #}
+                <div id="tab-gh" class="tab-content active">
+                    <div id="chart_gh" style="width: 100%; height: 250px;"></div>
+                </div>
+    
+                <div id="tab-ph" class="tab-content">
+                    <div id="chart_ph_kh" style="width: 100%; height: 250px;"></div>
+                </div>
+    
+                <div id="tab-toxic" class="tab-content">
+                    <div id="chart_toxic" style="width: 100%; height: 250px;"></div>
+                </div>
+    
+            </div>
         </div>
-
-        <div class="chart-card">
-            <h3>⚖️ Équilibre pH & KH</h3>
-            <div id="chart_ph_kh"></div>
-        </div>
-
-        <div class="chart-card">
-            <h3>☢️ Toxiques (Nitrites & Ammonium)</h3>
-            <div id="chart_toxic"></div>
-        </div>
-    </section>
-</div>
+    </div>
 
 {# CHARGEMENT DES SCRIPTS #}
 

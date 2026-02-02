@@ -90,3 +90,37 @@
     font-size: 0.7rem;
     color: #999;
 }
+
+/* Fix pour pouvoir descendre tout en bas */
+.content-area {
+    height: 100%;
+    min-height: 100vh;
+    overflow-y: visible !important; 
+}
+
+/* Fix pour que le fond reste blanc sur le dernier graphique */
+.stat-card.full-width {
+    background-color: white !important;
+    border-radius: 20px;
+    padding: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* Style des boutons d'onglets (Orange) */
+.tab-btn {
+    padding: 8px 15px;
+    border-radius: 10px;
+    border: none;
+    background: #eee;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.tab-btn.active {
+    background: #f06292;
+    color: white;
+}
+
+/* Cache les onglets inactifs */
+.tab-content { display: none; }
+.tab-content.active { display: block; }

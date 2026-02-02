@@ -42,7 +42,8 @@
             <div class="section-title">Informations Générales</div>
             <div class="form-group">
                 <div class="label-row">Date de la saisie</div>
-                <input type="date" name="date" class="form-input" value="{{ "now"|date("Y-m-d") }}">
+                 <input type="date" name="date" value="{{ "now"|date("Y-m-d") }}" class="input-readonly" readonly tabindex="-1">
+                
             </div>
 
             <div class="section-title">Chimie de l'eau</div>

@@ -100,3 +100,22 @@
 .content-area::-webkit-scrollbar {
     display: none;
 }
+
+.input-readonly {
+    width: 100%;
+    padding: 12px;
+    border: 1.5px solid #eee;
+    border-radius: 12px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    background: #f9f9f9;
+    outline: none !important;
+    pointer-events: none;
+    user-select: none;
+}
+
+/* Sécurité supplémentaire pour certains navigateurs */
+.input-readonly:focus {
+    box-shadow: none !important;
+    border-color: #ccc !important;
+}
