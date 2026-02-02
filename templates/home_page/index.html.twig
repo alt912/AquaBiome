@@ -64,6 +64,41 @@
 
     {# Section Alertes et Date de mise à jour #}
     <section class="alerts-section">
+        
+        {# -- TÂCHES À FAIRE (Rappels) -- #}
+        {% if taches is defined and taches is not empty %}
+            <div class="mb-4">
+                {% for tache in taches %}
+                    <div class="alert alert-info alert-dismissible fade show" role="alert" style="border-left: 5px solid #0984e3;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>📝 À faire :</strong> {{ tache.titre }}
+                                <br>
+                                <small>Pour le : {{ tache.deadline|date('d/m/Y') }}</small>
+                            </div>
+                            <a href="{{ path('app_tache_complete', {id: tache.id}) }}" class="btn btn-sm btn-light text-primary fw-bold">
+                                ✅ Fait
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {# -- NOUVEAU : Affichage des ALERTES BOOTSTRAP (Depuis la BDD) -- #}
+        {% if alertes is defined and alertes is not empty %}
+            <div class="mb-4">
+                {% for alerte in alertes %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>{{ alerte.nom }} :</strong> {{ alerte.messageAlerte }}
+                        <br>
+                        <small class="text-muted">Le {{ alerte.dateAlerte|date('d/m/Y à H:i') }}</small>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
         <div class="alert-card">
             <h3>Dernière activité</h3>
             <div style="min-height: 40px;">

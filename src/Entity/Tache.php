@@ -37,7 +37,26 @@ class Tache
 
     #[ORM\ManyToOne(inversedBy: 'taches')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?user $utilisateur = null;
+    private ?User $utilisateur = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $recurrenceJours = null;
+
+    public function __construct()
+    {
+        $this->status = 'À faire';
+    }
+
+    public function getRecurrenceJours(): ?int
+    {
+        return $this->recurrenceJours;
+    }
+
+    public function setRecurrenceJours(?int $recurrenceJours): static
+    {
+        $this->recurrenceJours = $recurrenceJours;
+        return $this;
+    }
 
     public function getId(): ?int
     {
@@ -128,12 +147,12 @@ class Tache
         return $this;
     }
 
-    public function getUtilisateur(): ?user
+    public function getUtilisateur(): ?User
     {
         return $this->utilisateur;
     }
 
-    public function setUtilisateur(?user $utilisateur): static
+    public function setUtilisateur(?User $utilisateur): static
     {
         $this->utilisateur = $utilisateur;
 

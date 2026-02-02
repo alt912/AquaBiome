@@ -40,4 +40,23 @@ class AlerteRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+    /**
+     * Finds manual alerts (no associated measure) AND the alert for the specific latest measure.
+     * @return Alerte[]
+     */
+    public function findRelevantAlerts(?int $latestMesureId): array
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->leftJoin('a.mesures', 'm')
+            ->where('m.id IS NULL'); // Manual alerts (no linked measure)
+
+        if ($latestMesureId) {
+            $qb->orWhere('m.id = :latestId')
+                ->setParameter('latestId', $latestMesureId);
+        }
+
+        return $qb->orderBy('a.dateAlerte', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
 }
