@@ -1,5 +1,8 @@
 twig:
     file_name_pattern: '*.twig'
+    date:
+        timezone: Europe/Paris
+        format: 'd/m/Y à H:i'
 
 when@test:
     twig:

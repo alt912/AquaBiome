@@ -32,7 +32,7 @@
                 <a href="{{ path('app_logout') }}" class="btn-logout">Se Déconnecter</a>
             {% else %}
                 {# Cas de secours si le mec arrive à accéder à la page sans être connecté #}
-                <h2>Invité</h2>
+                <h2>Utilisateur</h2>
                 <p>Veuillez vous connecter</p>
                 <a href="{{ path('app_login') }}" class="btn-logout">Connexion</a>
             {% endif %}
