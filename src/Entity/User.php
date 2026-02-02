@@ -3,11 +3,14 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
+#[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -30,6 +33,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column]
     private ?string $password = null;
+
+    #[ORM\OneToMany(targetEntity: Tache::class, mappedBy: 'utilisateur')]
+    private Collection $taches;
+
+    #[ORM\OneToMany(targetEntity: Nourriture::class, mappedBy: 'utilisateur')]
+    private Collection $nourritures;
+
+    public function __construct()
+    {
+        $this->taches = new ArrayCollection();
+        $this->nourritures = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -60,6 +75,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @see UserInterface
+     *
+     * @return list<string>
      */
     public function getRoles(): array
     {
@@ -83,7 +100,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @see PasswordAuthenticatedUserInterface
      */
-    public function getPassword(): ?string
+    public function getPassword(): string
     {
         return $this->password;
     }
@@ -96,13 +113,71 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * Ensure the session doesn't contain actual password hashes by CRC32C-hashing them, as supported since Symfony 7.3.
+     * @see UserInterface
      */
-    public function __serialize(): array
+    public function eraseCredentials(): void
     {
-        $data = (array) $this;
-        $data["\0".self::class."\0password"] = hash('crc32c', $this->password);
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
+    }
 
-        return $data;
+    /**
+     * @return Collection<int, Tache>
+     */
+    public function getTaches(): Collection
+    {
+        return $this->taches;
+    }
+
+    public function addTache(Tache $tache): static
+    {
+        if (!$this->taches->contains($tache)) {
+            $this->taches->add($tache);
+            $tache->setUtilisateur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTache(Tache $tache): static
+    {
+        if ($this->taches->removeElement($tache)) {
+            // set the owning side to null (unless already changed)
+            if ($tache->getUtilisateur() === $this) {
+                $tache->setUtilisateur(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Nourriture>
+     */
+    public function getNourritures(): Collection
+    {
+        return $this->nourritures;
+    }
+
+    public function addNourriture(Nourriture $nourriture): static
+    {
+        if (!$this->nourritures->contains($nourriture)) {
+            $this->nourritures->add($nourriture);
+            $nourriture->setUtilisateur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeNourriture(Nourriture $nourriture): static
+    {
+        if ($this->nourritures->removeElement($nourriture)) {
+            // set the owning side to null (unless already changed)
+            if ($nourriture->getUtilisateur() === $this) {
+                $nourriture->setUtilisateur(null);
+            }
+        }
+
+        return $this;
     }
 }
