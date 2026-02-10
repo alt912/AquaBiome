@@ -1,8 +1,7 @@
-
 services:
-  
-###> doctrine/doctrine-bundle ###
-  
+
+  ###> doctrine/doctrine-bundle ###
+
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: phpMyAdmin_aquaBiome
@@ -11,18 +10,16 @@ services:
       PMA_HOST: mysql
       PMA_PORT: 3306
     ports:
-      - "8082:80"
+      - "8085:80"
     depends_on:
       - mysql
-###< doctrine/doctrine-bundle ###
+  ###< doctrine/doctrine-bundle ###
 
   mysql:
     ports:
       - "3307:3306"
-    volumes:
-      - ./mysql_data:/var/lib/mysql
 
-###> symfony/mailer ###
+  ###> symfony/mailer ###
   mailer:
     image: axllent/mailpit
     ports:
@@ -31,6 +28,5 @@ services:
     environment:
       MP_SMTP_AUTH_ACCEPT_ANY: 1
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
-###< symfony/mailer ###
 
-  
+###< symfony/mailer ###

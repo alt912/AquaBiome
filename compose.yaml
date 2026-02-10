@@ -1,9 +1,8 @@
-
 services:
-###> doctrine/doctrine-bundle ###
+  ###> doctrine/doctrine-bundle ###
   mysql:
     image: mysql:8.0
-    platform: linux/x86_64
+
     container_name: aquaBiome
     restart: always
     environment:

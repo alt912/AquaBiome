@@ -18,7 +18,7 @@ class Nourriture
 
     #[ORM\ManyToOne(inversedBy: 'nourritures')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Aquarium $Aquarium = null;
+    private ?Aquarium $aquarium = null;
 
     #[ORM\ManyToOne(inversedBy: 'nourritures')]
     #[ORM\JoinColumn(nullable: false)]
@@ -43,12 +43,12 @@ class Nourriture
 
     public function getAquarium(): ?Aquarium
     {
-        return $this->Aquarium;
+        return $this->aquarium;
     }
 
-    public function setAquarium(?Aquarium $Aquarium): static
+    public function setAquarium(?Aquarium $aquarium): static
     {
-        $this->Aquarium = $Aquarium;
+        $this->aquarium = $aquarium;
 
         return $this;
     }

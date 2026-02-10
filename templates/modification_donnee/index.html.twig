@@ -1,0 +1,75 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier la mesure - AquaBiome{% endblock %}
+{% block page_name %}Modification{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/login.css') }}">
+    <style>
+        .edit-container {
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="edit-container">
+    <div class="page">
+        <h2>Corriger la mesure du {{ mesure.dateSaisie|date('d/m/Y à H:i') }}</h2>
+        
+        <form method="post">
+            <div class="form-group">
+                <label class="form-label">Température (°C)</label>
+                <input type="number" step="0.1" name="temperature" class="form-control" value="{{ mesure.temperature }}" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">pH</label>
+                <input type="number" step="0.1" name="ph" class="form-control" value="{{ mesure.ph }}" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">GH (Dureté totale)</label>
+                <input type="number" name="gh" class="form-control" value="{{ mesure.gh }}" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">KH (Dureté carbonatée)</label>
+                <input type="number" name="kh" class="form-control" value="{{ mesure.kh }}" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Nitrites (mg/L)</label>
+                <input type="number" step="0.01" name="nitrite" class="form-control" value="{{ mesure.nitrites }}" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Ammonium (mg/L)</label>
+                <input type="number" step="0.01" name="ammonium" class="form-control" value="{{ mesure.ammonium }}" required>
+            </div>
+
+            <button type="submit" class="btn">Enregistrer les corrections</button>
+            <a href="{{ path('gestion_compte') }}" style="display: block; margin-top: 15px; color: #666;">Annuler</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

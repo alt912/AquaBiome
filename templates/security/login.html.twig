@@ -2,6 +2,8 @@
 
 {% block title %}AquaBiome - Connexion{% endblock %}
 
+{% block header %}{% endblock %}
+
 {% block stylesheets %}
     {{ parent() }}
     <link rel="stylesheet" href="{{ asset('styles/login.css') }}">
@@ -44,6 +46,10 @@
             </div>
 
             <button type="submit" class="btn">Se Connecter</button>
+            
+            <div class="register-link" style="margin-top: 15px; text-align: center;">
+                <p>Pas encore de compte ? <a href="{{ path('gestionCompte') }}">S'inscrire</a></p>
+            </div>
         </div>
     </form>
 </div>

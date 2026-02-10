@@ -1,0 +1,121 @@
+/* Zone de contenu qui permet le scroll */
+.content-area {
+    padding: 15px;
+    flex-grow: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Carte style "App" */
+.glass-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    backdrop-filter: blur(5px);
+}
+
+.hero-text {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.hero-text h1 {
+    font-size: 1.4rem;
+    margin: 0;
+    color: #4834d4;
+}
+
+.hero-text p {
+    font-size: 0.85rem;
+    color: #666;
+    margin: 5px 0 0 0;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #7e84cc;
+    letter-spacing: 1px;
+    margin: 20px 0 10px 0;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.label-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #2d3436;
+}
+
+.unit {
+    color: #a0a0a0;
+    font-weight: normal;
+    font-size: 0.75rem;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px;
+    border: 1.5px solid #eee;
+    border-radius: 12px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    background: #f9f9f9;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #7e84cc;
+    background: white;
+}
+
+.btn-submit {
+    width: 100%;
+    background: #101820;
+    color: white;
+    border: none;
+    padding: 16px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1rem;
+    margin-top: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+/* Cache la scrollbar */
+.content-area::-webkit-scrollbar {
+    display: none;
+}
+
+.input-readonly {
+    width: 100%;
+    padding: 12px;
+    border: 1.5px solid #eee;
+    border-radius: 12px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    background: #f9f9f9;
+    outline: none !important;
+    pointer-events: none;
+    user-select: none;
+}
+
+/* Sécurité supplémentaire pour certains navigateurs */
+.input-readonly:focus {
+    box-shadow: none !important;
+    border-color: #ccc !important;
+}

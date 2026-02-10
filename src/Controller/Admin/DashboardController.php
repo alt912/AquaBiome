@@ -9,6 +9,7 @@ use App\Entity\Nourriture;
 use App\Entity\PoissonInventaire;
 use App\Entity\Tache;
 use App\Entity\User;
+
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
@@ -59,6 +60,7 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Nourriture', 'fas fa-list', Nourriture::class);
         yield MenuItem::linkToCrud('PoissonInventaire', 'fas fa-list', PoissonInventaire::class);
         yield MenuItem::linkToCrud('Tache', 'fas fa-list', Tache::class);
+        yield MenuItem::linkToCrud('Utilisateurs', 'fas fa-users', User::class);
         // yield MenuItem::linkToCrud('User', 'fas fa-list', User::class);
     }
 }

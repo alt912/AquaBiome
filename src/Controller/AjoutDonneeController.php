@@ -55,6 +55,7 @@ final class AjoutDonneeController extends AbstractController
             $mesure->setAmmonium((float) $request->request->get('ammonium'));
 
             $mesure->setAquarium($aquarium);
+            $mesure->setUser($this->getUser());
 
             // --- GESTION DES ALERTES (Persistance en BDD) ---
             // On vérifie les seuils et on crée une entité Alerte si nécessaire
@@ -93,6 +94,15 @@ final class AjoutDonneeController extends AbstractController
 
                 $em->persist($alerte);
             }
+
+            // --- HISTORIQUE (Trace de la création) ---
+            $historique = new \App\Entity\MesureHistorique();
+            $historique->setMesure($mesure);
+            $historique->setUser($this->getUser());
+            $historique->setDateAction(new \DateTime());
+            $historique->setAction("CREATION");
+            $historique->setDetails("Ajout de la mesure initiale.");
+            $em->persist($historique);
 
             $em->persist($mesure);
             $em->flush();

@@ -1,0 +1,62 @@
+.content-area {
+    padding: 20px 15px;
+    display: flex;
+    justify-content: center;
+    flex-grow: 1;
+}
+
+.todo-container {
+    width: 100%;
+    max-width: 400px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    align-self: flex-start;
+    margin-top: 20px;
+}
+
+h2.todo-title { text-align: center; color: #4834d4; font-size: 1.4rem; margin-bottom: 25px; font-weight: 700; }
+.todo-section { margin-bottom: 25px; }
+.section-label { font-weight: 800; font-size: 1.1rem; margin-bottom: 15px; color: #2d3436; display: block; }
+
+.todo-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.custom-checkbox {
+    width: 22px;
+    height: 22px;
+    border: 2px solid #7e84cc;
+    border-radius: 4px;
+    margin-right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.todo-text { font-size: 1.05rem; color: #2d3436; font-weight: 500; }
+
+/* État coché */
+.todo-item.done .custom-checkbox { background: #7e84cc; border-color: #7e84cc; }
+.todo-item.done .custom-checkbox::after { content: '✓'; color: white; font-weight: bold; font-size: 14px; }
+.todo-item.done .todo-text { color: #a29bfe; text-decoration: line-through; opacity: 0.7; }
+
+.add-item {
+    display: flex;
+    align-items: center;
+    color: #2d3436;
+    background: none;
+    border: none;
+    font-weight: 600;
+    margin-top: 20px;
+    width: 100%;
+    cursor: pointer;
+    padding: 10px 0;
+}
+.plus-icon { font-size: 1.5rem; margin-right: 10px; }

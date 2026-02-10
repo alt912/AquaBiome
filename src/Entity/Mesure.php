@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\MesureRepository;
+use App\Entity\User;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -49,7 +50,58 @@ class Mesure
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?Alerte $alerte = null;
 
-    // Note : La propriété $utilisateur a été supprimée pour permettre l'accès public à tous.
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?User $user = null;
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
+        return $this;
+    }
+
+    #[ORM\OneToMany(mappedBy: 'mesure', targetEntity: MesureHistorique::class, orphanRemoval: true)]
+    private \Doctrine\Common\Collections\Collection $historiques;
+
+    public function __construct()
+    {
+        $this->historiques = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * @return \Doctrine\Common\Collections\Collection<int, MesureHistorique>
+     */
+    public function getHistoriques(): \Doctrine\Common\Collections\Collection
+    {
+        return $this->historiques;
+    }
+
+    public function addHistorique(MesureHistorique $historique): static
+    {
+        if (!$this->historiques->contains($historique)) {
+            $this->historiques->add($historique);
+            $historique->setMesure($this);
+        }
+
+        return $this;
+    }
+
+    public function removeHistorique(MesureHistorique $historique): static
+    {
+        if ($this->historiques->removeElement($historique)) {
+            // set the owning side to null (unless already changed)
+            if ($historique->getMesure() === $this) {
+                $historique->setMesure(null);
+            }
+        }
+
+        return $this;
+    }
 
     public function getId(): ?int
     {

@@ -55,10 +55,16 @@
 
     {# Header de bienvenue #}
     <section class="user-welcome">
-        <div class="welcome-avatar">👤</div>
+        <div class="welcome-avatar">
+            {% if app.user and app.user.avatar %}
+                <img src="{{ asset('uploads/avatars/' ~ app.user.avatar) }}" alt="Avatar" style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%;">
+            {% else %}
+                👤
+            {% endif %}
+        </div>
         <p>
             Bienvenue sur votre tableau de bord, 
-            <strong>Invité</strong>
+            <strong>{{ app.user.nom|default(app.user.email|split('@')[0]) }}</strong>
         </p>
     </section>
 

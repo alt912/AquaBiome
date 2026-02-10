@@ -2,6 +2,9 @@ security:
     # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+    role_hierarchy:
+        ROLE_PROF: ROLE_USER
+        ROLE_ADMIN: [ROLE_PROF, ROLE_ALLOWED_TO_SWITCH]
 
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
@@ -37,7 +40,9 @@ security:
     # Contrôle d'accès : pour forcer la connexion sur certaines pages
     access_control:
         - { path: ^/login, roles: PUBLIC_ACCESS }
-        - { path: ^/, roles: PUBLIC_ACCESS }
+        - { path: ^/gestionCompte, roles: PUBLIC_ACCESS } # Inscription publique
+        - { path: ^/admin, roles: ROLE_ADMIN }
+        - { path: ^/, roles: ROLE_USER } # Tout le reste nécessite une connexion
 
 when@test:
     security:
