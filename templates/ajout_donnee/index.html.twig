@@ -26,7 +26,7 @@
         
         {# --- ZONE NOTIFICATION (SYMFONY) --- #}
         {% for message in app.flashes('error') %}
-            <div class="alert-error">⚠️ {{ message }}</div>
+            <div class="alert-error"><i class="bi bi-exclamation-triangle-fill"></i> {{ message }}</div>
         {% endfor %}
 
         {# --- ZONE ERREUR (JAVASCRIPT) --- #}

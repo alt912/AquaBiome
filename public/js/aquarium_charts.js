@@ -75,7 +75,13 @@ function initCharts() {
 }
 
 window.addEventListener('load', initCharts);
-window.addEventListener('resize', initCharts);
+
+// Throttle: on ne redessine pas plus d'une fois toutes les 250ms lors du resize
+let resizeTimer;
+window.addEventListener('resize', function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(initCharts, 250);
+});
 
 function openTab(evt, tabName) {
     var i, tabcontent, tablinks;

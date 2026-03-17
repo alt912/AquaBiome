@@ -38,6 +38,12 @@
     background: linear-gradient(90deg, #f06292, #3f51b5);
 }
 
+.avatar-large-container {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 20px;
+}
+
 .avatar-large {
     width: 100px;
     height: 100px;
@@ -50,8 +56,35 @@
     justify-content: center;
     font-size: 3.5rem;
     color: #3f51b5;
-    margin-bottom: 20px;
     box-shadow: 0 4px 10px rgba(63, 81, 181, 0.2);
+}
+
+.btn-edit-avatar {
+    position: absolute;
+    bottom: -10px;
+    right: -25px;
+    /* Déborde du coin en bas à droite */
+    background: white;
+    color: #3f51b5;
+    /* Bleu principal */
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    text-decoration: none;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    /* Ombre plus marquée */
+    transition: all 0.3s ease;
+    border: 2px solid #e8eaf6;
+    /* Petite bordure douce */
+    z-index: 10;
+}
+
+.btn-edit-avatar:hover {
+    background: #f1f2f6;
+    transform: translateY(-2px);
+    color: #f06292;
+    /* Passe au rose au survol comme l'ancien crayon */
 }
 
 .user-info h2 {

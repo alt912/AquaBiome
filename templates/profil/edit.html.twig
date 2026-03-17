@@ -3,6 +3,16 @@
 {% block title %}Modifier mon profil - AquaBiome{% endblock %}
 {% block page_name %}Édition Profil{% endblock %}
 
+{% block page_icon %}
+    {% if app.user and app.user.avatar %}
+        <img src="{{ asset('uploads/avatars/' ~ app.user.avatar) }}" alt="Avatar" style="width: 20px; height: 20px; object-fit: cover; border-radius: 50%; vertical-align: middle;">
+    {% else %}
+        <i class="bi bi-person-circle"></i>
+    {% endif %}
+{% endblock %}
+
+{% block header_profile_icon %}{% endblock %}
+
 {% block stylesheets %}
     {{ parent() }}
     <link rel="stylesheet" href="{{ asset('styles/login.css') }}">
@@ -46,7 +56,7 @@
                 <img src="{{ asset('uploads/avatars/' ~ app.user.avatar) }}" alt="Avatar actuel">
                 <p><small>Image actuelle</small></p>
             {% else %}
-                <div style="font-size: 4rem;">👤</div>
+                <div style="font-size: 4rem; color: #3f51b5;"><i class="bi bi-person-bounding-box"></i></div>
                 <p><small>Aucune image définie</small></p>
             {% endif %}
         </div>

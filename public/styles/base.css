@@ -1,41 +1,52 @@
-/* Variables simples */
+/* =============================================
+   VARIABLES & BASE
+   ============================================= */
 :root {
     --pink: #f06292;
     --blue: #3f51b5;
     --gray: #e0e0e0;
+    --ocean-deep: #041120;
+    --ocean-mid: #0b2340;
+    --ocean-teal: #00b4d8;
+    --coral: #f06292;
+    --container-width: 400px;
+}
+
+* {
+    box-sizing: border-box;
 }
 
 body {
     margin: 0;
     background-color: #222;
     font-family: 'Segoe UI', sans-serif;
-    display: flex;
-    justify-content: center;
-}
-
-/* Le "téléphone" */
-.smartphone-container {
-    width: 400px;
     min-height: 100vh;
-    background: url("../image/fondaquabiome.png") no-repeat center top;
-    background-size: cover;
-    position: relative;
-    box-shadow: 0 0 20px rgba(0,0,0,0.5);
-    display: flex;
-    flex-direction: column;
 }
 
-/* Header blanc */
+/* =============================================
+   HEADER — mobile (dans le flow normal)
+   ============================================= */
 .main-header {
     background: white;
-    padding: 10px 15px;
     border-bottom: 5px solid var(--pink);
+    width: 100%;
+}
+
+/* Sur mobile, on limite le contenu du header à la même largeur que le container */
+.header-inner {
+    max-width: var(--container-width);
+    margin: 0 auto;
+    padding: 10px 15px;
 }
 
 .header-container {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
+}
+
+.header-container .right-actions {
+    justify-self: end;
 }
 
 .header-logo {
@@ -47,20 +58,28 @@ body {
     text-decoration: none;
 }
 
-/* Petit badge de la page (Pilule) */
+/* Badge de la page actuelle (Pilule) */
 .active-tab-pill {
     background: var(--gray);
-    padding: 6px 12px;
-    border-radius: 20px;
+    padding: 10px 18px;
+    border-radius: 30px;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
+    justify-self: center;
+}
+
+.active-tab-pill .pill-emoji {
+    font-size: 1.15rem;
+    display: flex;
+    align-items: center;
 }
 
 .pill-text {
-    font-size: 0.9rem;
-    font-weight: bold;
+    font-size: 1rem;
+    font-weight: 700;
     color: #333;
+    white-space: nowrap;
 }
 
 /* Zone de droite (Profil + To-do) */
@@ -92,7 +111,142 @@ body {
     object-fit: contain;
 }
 
+/* =============================================
+   PAGE OUTER & CONTAINER — mobile
+   ============================================= */
+.page-outer {
+    display: flex;
+    justify-content: center;
+}
+
+/* Le contenu principal */
+.smartphone-container {
+    width: 100%;
+    max-width: var(--container-width);
+    min-height: 100vh;
+    background: url("../image/fondaquabiome.webp") no-repeat center top;
+    background-image: image-set(
+        url("../image/fondaquabiome.webp") type("image/webp"),
+        url("../image/fondaquabiome.png") type("image/png")
+    );
+    background-size: cover;
+    position: relative;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+}
+
 /* Main content */
 main {
     flex-grow: 1;
+}
+
+
+/* =============================================
+   DESKTOP RESPONSIVE (≥ 768px)
+   ============================================= */
+@media (min-width: 768px) {
+
+    /* --- Fond aquatique CSS pur sur les côtés --- */
+    body {
+        /* Océan profond de base */
+        background-color: var(--ocean-deep);
+        /* Reflets lumineux : corail à gauche, teal à droite, lueur verte au fond */
+        background-image:
+            /* Lueur corail — côté gauche, mi-hauteur */
+            radial-gradient(ellipse 45% 55% at 8% 55%, rgba(240, 98, 146, 0.22) 0%, transparent 65%),
+            /* Lueur teal — côté droit, haut */
+            radial-gradient(ellipse 40% 50% at 92% 30%, rgba(0, 180, 216, 0.25) 0%, transparent 60%),
+            /* Reflet vert-menthe profond — bas centre */
+            radial-gradient(ellipse 70% 25% at 50% 95%, rgba(0, 229, 204, 0.12) 0%, transparent 70%),
+            /* Reflet bleu électrique — coin bas gauche */
+            radial-gradient(ellipse 30% 40% at 5% 90%, rgba(63, 81, 181, 0.2) 0%, transparent 60%),
+            /* Dégradé de fond océan profond */
+            linear-gradient(175deg, #041120 0%, #071b35 30%, #0b2848 60%, #0d3558 100%);
+    }
+
+    /* Bulles décoratives CSS pur (pseudo-éléments sur body) */
+    body::before,
+    body::after {
+        content: '';
+        position: fixed;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    /* Grande bulle teal gauche */
+    body::before {
+        width: 180px;
+        height: 180px;
+        bottom: 15%;
+        left: 4%;
+        background: radial-gradient(circle at 35% 35%,
+            rgba(0, 180, 216, 0.18) 0%,
+            rgba(0, 180, 216, 0.06) 50%,
+            transparent 70%
+        );
+        border: 1px solid rgba(0, 180, 216, 0.12);
+    }
+
+    /* Petite bulle corail droite */
+    body::after {
+        width: 100px;
+        height: 100px;
+        top: 35%;
+        right: 5%;
+        background: radial-gradient(circle at 40% 40%,
+            rgba(240, 98, 146, 0.2) 0%,
+            rgba(240, 98, 146, 0.07) 50%,
+            transparent 70%
+        );
+        border: 1px solid rgba(240, 98, 146, 0.15);
+    }
+
+    /* --- Header : PLEINE LARGEUR écran + sticky --- */
+    .main-header {
+        position: sticky;
+        top: 0;
+        left: 0;
+        width: 100vw;       /* Toute la largeur du viewport */
+        z-index: 100;
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    /* Contenu du header centré sur la même largeur que le container */
+    .header-inner {
+        max-width: 720px;
+        margin: 0 auto;     /* Centrage du contenu dans le header pleine largeur */
+        padding: 12px 24px;
+    }
+
+    /* --- Zone de contenu : centrée avec marges --- */
+    .page-outer {
+        padding: 35px 0 60px;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* --- Container plus large, carte flottante --- */
+    .smartphone-container {
+        max-width: 680px;
+        width: 90vw;
+        min-height: auto;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow:
+            0 30px 80px rgba(0, 0, 0, 0.6),
+            0 0 0 1px rgba(255, 255, 255, 0.06),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+}
+
+/* Grand écran (≥ 1200px) : encore un peu plus large */
+@media (min-width: 1200px) {
+    .smartphone-container {
+        max-width: 780px;
+    }
+    .header-inner {
+        max-width: 780px;
+    }
 }
