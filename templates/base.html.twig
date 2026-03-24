@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}AquaBiome{% endblock %}</title>
+    <link rel="icon" type="image/png" href="{{ asset('image/logo_aquabiome.png') }}">
 
     {# Preload des ressources critiques pour un rendu plus rapide #}
     <link rel="preload" href="/styles/base.css" as="style">
@@ -12,7 +13,7 @@
     {% block stylesheets %}
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-        <link rel="stylesheet" href="{{ asset('styles/base.css') }}">
+        <link rel="stylesheet" href="{{ asset('styles/base.css') }}?v=3">
     {% endblock %}
 
     {% block javascripts %}
@@ -20,6 +21,44 @@
     {% endblock %}
 </head>
 <body>
+    {# Splash Screen Animation (Hidden immediately, shown BEFORE page render if needed) #}
+    <div id="splash-screen" class="splash-screen" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #ffffff; z-index: 9999; justify-content: center; align-items: center; transition: opacity 0.5s ease-out, visibility 0.5s ease-out;">
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 30px;">
+            <picture>
+                <source srcset="{{ asset('image/logo_aquabiome.webp') }}" type="image/webp">
+                <img src="{{ asset('image/logo_aquabiome.png') }}" class="splash-logo" alt="AquaBiome Logo" style="width: 160px; height: auto;">
+            </picture>
+            
+            {# Barre de chargement sleek #}
+            <div style="width: 140px; height: 4px; background: rgba(63, 81, 181, 0.1); border-radius: 4px; overflow: hidden; position: relative;">
+                <div id="splash-progress" style="height: 100%; width: 0%; background: linear-gradient(90deg, #3f51b5, #00b4d8); border-radius: 4px; transition: width 1.8s cubic-bezier(0.65, 0, 0.35, 1);"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Exécution immédiate (bloquante) pour éviter tout flash ou lenteur
+        if (!sessionStorage.getItem('splashShown')) {
+            const splash = document.getElementById('splash-screen');
+            const progress = document.getElementById('splash-progress');
+            splash.style.display = 'flex'; // On l'affiche tout de suite
+            
+            // On enregistre qu'il a été vu
+            sessionStorage.setItem('splashShown', 'true');
+
+            // Lancer l'animation de la barre de façon fluide
+            setTimeout(() => {
+                progress.style.width = '100%';
+            }, 50);
+            
+            // Disparition après 2 secondes (fin de l'animation de la barre)
+            setTimeout(() => {
+                splash.style.opacity = '0';
+                splash.style.visibility = 'hidden';
+                setTimeout(() => splash.style.display = 'none', 500);
+            }, 2000);
+        }
+    </script>
+
     <div class="ocean-animation" aria-hidden="true">
         <div class="light-rays"></div>
         <div class="bubbles-container">
