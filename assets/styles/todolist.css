@@ -1,5 +1,9 @@
+/* =============================================
+   TO-DO LIST — Design Premium
+   ============================================= */
+
 .content-area {
-    padding: 20px 15px;
+    padding: 20px 15px 40px;
     display: flex;
     justify-content: center;
     flex-grow: 1;
@@ -8,55 +12,210 @@
 .todo-container {
     width: 100%;
     max-width: 400px;
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 20px;
-    padding: 25px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
-    align-self: flex-start;
-    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
 }
 
-h2.todo-title { text-align: center; color: #4834d4; font-size: 1.4rem; margin-bottom: 25px; font-weight: 700; }
-.todo-section { margin-bottom: 25px; }
-.section-label { font-weight: 800; font-size: 1.1rem; margin-bottom: 15px; color: #2d3436; display: block; }
+/* ----- BARRE D'AJOUT (en haut) ----- */
+.add-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: white;
+    border-radius: 16px;
+    padding: 10px 14px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+    margin-bottom: 20px;
+    border: 2px solid transparent;
+    transition: border-color 0.25s ease;
+}
 
+.add-bar:focus-within {
+    border-color: #7e84cc;
+}
+
+.add-bar input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 0.95rem;
+    color: #2d3436;
+    background: transparent;
+    font-family: inherit;
+}
+
+.add-bar input::placeholder {
+    color: #b2bec3;
+}
+
+.add-bar-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    background: linear-gradient(135deg, #7e84cc, #a29bfe);
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    flex-shrink: 0;
+}
+
+.add-bar-btn:hover {
+    transform: scale(1.08);
+    box-shadow: 0 4px 12px rgba(126, 132, 204, 0.45);
+}
+
+/* ----- HEADER ----- */
+.todo-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+}
+
+.todo-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #2d3436;
+    margin: 0;
+}
+
+.todo-stats {
+    background: linear-gradient(135deg, #7e84cc, #a29bfe);
+    color: white;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 20px;
+    letter-spacing: 0.3px;
+}
+
+/* ----- SECTIONS ----- */
+.todo-section {
+    background: white;
+    border-radius: 16px;
+    padding: 16px 16px 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    margin-bottom: 14px;
+}
+
+.section-label {
+    font-weight: 700;
+    font-size: 0.78rem;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: #b2bec3;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.section-label i {
+    font-size: 0.9rem;
+}
+
+/* ----- ITEMS ----- */
 .todo-item {
     display: flex;
     align-items: center;
-    margin-bottom: 15px;
+    gap: 12px;
+    padding: 10px 8px;
+    border-radius: 10px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: background 0.15s ease, transform 0.15s ease;
+    margin-bottom: 2px;
+}
+
+.todo-item:hover {
+    background: #f8f9ff;
 }
 
 .custom-checkbox {
     width: 22px;
     height: 22px;
-    border: 2px solid #7e84cc;
-    border-radius: 4px;
-    margin-right: 12px;
+    border: 2px solid #ced6e0;
+    border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    transition: all 0.2s ease;
 }
 
-.todo-text { font-size: 1.05rem; color: #2d3436; font-weight: 500; }
+.todo-text {
+    flex: 1;
+    font-size: 0.97rem;
+    color: #2d3436;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
 
-/* État coché */
-.todo-item.done .custom-checkbox { background: #7e84cc; border-color: #7e84cc; }
-.todo-item.done .custom-checkbox::after { content: '✓'; color: white; font-weight: bold; font-size: 14px; }
-.todo-item.done .todo-text { color: #a29bfe; text-decoration: line-through; opacity: 0.7; }
+/* ----- ÉTAT COCHÉ ----- */
+.todo-item.done .custom-checkbox {
+    background: linear-gradient(135deg, #7e84cc, #a29bfe);
+    border-color: #a29bfe;
+}
 
-.add-item {
+.todo-item.done .custom-checkbox::after {
+    content: '';
+    display: block;
+    width: 5px;
+    height: 9px;
+    border: 2px solid white;
+    border-top: none;
+    border-left: none;
+    transform: rotate(45deg) translate(-1px, -1px);
+}
+
+.todo-item.done .todo-text {
+    color: #b2bec3;
+    text-decoration: line-through;
+}
+
+/* ----- BOUTON SUPPRIMER ----- */
+.delete-btn {
     display: flex;
     align-items: center;
-    color: #2d3436;
-    background: none;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
     border: none;
-    font-weight: 600;
-    margin-top: 20px;
-    width: 100%;
+    background: transparent;
+    border-radius: 8px;
+    color: #dfe6e9;
+    font-size: 1rem;
     cursor: pointer;
-    padding: 10px 0;
+    transition: background 0.15s ease, color 0.15s ease;
+    flex-shrink: 0;
+    opacity: 0;
 }
-.plus-icon { font-size: 1.5rem; margin-right: 10px; }
+
+.todo-item:hover .delete-btn {
+    opacity: 1;
+}
+
+.delete-btn:hover {
+    background: #fff0f0;
+    color: #e17055;
+}
+
+/* ----- SECTION VIDE ----- */
+.empty-hint {
+    text-align: center;
+    color: #b2bec3;
+    font-size: 0.85rem;
+    padding: 10px 0 6px;
+}
+
+/* Desktop */
+@media (min-width: 768px) {
+    .todo-container {
+        max-width: 520px;
+    }
+}

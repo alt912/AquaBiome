@@ -12,58 +12,61 @@
 {% block body %}
 <div class="content-area">
     <div class="todo-container">
-        
-        <div class="todo-header">
-            <h2 class="todo-title">Ma Liste</h2>
-            <div class="todo-stats" id="task-counter">3 Tâches</div>
+
+        {# ---- Barre d'ajout (EN HAUT) ---- #}
+        <div class="add-bar">
+            <i class="bi bi-pencil-fill" style="color: #b2bec3; font-size: 0.95rem; flex-shrink: 0;"></i>
+            <input type="text" id="inlineTaskInput" placeholder="Ajouter une tâche…" onkeypress="handleInlineKeyPress(event)">
+            <button class="add-bar-btn" onclick="confirmInlineTask()" title="Ajouter">
+                <i class="bi bi-plus-lg"></i>
+            </button>
         </div>
 
+        {# ---- Titre + compteur ---- #}
+        <div class="todo-header">
+            <h2 class="todo-title">Ma Liste</h2>
+            <div class="todo-stats" id="task-counter">0 Tâche</div>
+        </div>
+
+        {# ---- Section À Faire ---- #}
         <div class="todo-section">
-            <span class="section-label"><i class="bi bi-clock-history"></i> À Faire</span>
+            <span class="section-label">
+                <i class="bi bi-hourglass-split"></i> À Faire
+            </span>
             <div id="list-todo" class="todo-list-wrapper">
                 <div class="todo-item" onclick="toggleTask(this)">
                     <div class="custom-checkbox"></div>
                     <span class="todo-text">Nourrir les poissons</span>
-                    <button class="delete-btn" onclick="deleteTask(event, this)"><i class="bi bi-trash"></i></button>
+                    <button class="delete-btn" onclick="deleteTask(event, this)" title="Supprimer">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
                 </div>
                 <div class="todo-item" onclick="toggleTask(this)">
                     <div class="custom-checkbox"></div>
                     <span class="todo-text">Vérifier le pH de l'eau</span>
-                    <button class="delete-btn" onclick="deleteTask(event, this)"><i class="bi bi-trash"></i></button>
+                    <button class="delete-btn" onclick="deleteTask(event, this)" title="Supprimer">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
                 </div>
             </div>
         </div>
 
+        {# ---- Section Terminées ---- #}
         <div class="todo-section">
-            <span class="section-label"><i class="bi bi-check2-circle"></i> Terminées</span>
+            <span class="section-label">
+                <i class="bi bi-check2-all"></i> Terminées
+            </span>
             <div id="list-done" class="todo-list-wrapper">
                 <div class="todo-item done" onclick="toggleTask(this)">
                     <div class="custom-checkbox"></div>
                     <span class="todo-text">Changer les plantes</span>
-                    <button class="delete-btn" onclick="deleteTask(event, this)"><i class="bi bi-trash"></i></button>
+                    <button class="delete-btn" onclick="deleteTask(event, this)" title="Supprimer">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
                 </div>
             </div>
         </div>
 
-        <div class="spacer"></div>
-
-        <div class="add-container">
-            <button class="add-item" onclick="openAddModal()">
-                <span class="plus-icon"><i class="bi bi-plus-lg"></i></span> Nouvelle Tâche
-            </button>
-        </div>
-    </div>
-</div>
-
-{# Modal Custom (remplace le prompt() natif) #}
-<div id="addTaskModal" class="todo-overlay">
-    <div class="todo-modal">
-        <h3 style="margin-top:0; margin-bottom:20px; color:var(--blue); font-weight:700;">Nouvelle Tâche</h3>
-        <input type="text" id="newTaskInput" class="todo-input" placeholder="Que devez-vous faire ?" onkeypress="handleKeyPress(event)">
-        <div class="modal-actions">
-            <button class="btn-cancel" onclick="closeAddModal()">Annuler</button>
-            <button class="btn-confirm" onclick="confirmAddTask()">Ajouter</button>
-        </div>
     </div>
 </div>
 {% endblock %}
@@ -72,17 +75,16 @@
     {{ parent() }}
     <script>
         function updateCounter() {
-            const allTasksCount = document.querySelectorAll('.todo-item').length;
+            const count = document.querySelectorAll('.todo-item').length;
             const counter = document.getElementById('task-counter');
-            counter.innerText = allTasksCount + (allTasksCount > 1 ? " Tâches" : " Tâche");
+            counter.innerText = count + (count > 1 ? " Tâches" : " Tâche");
         }
 
         function toggleTask(element) {
             const todoList = document.getElementById('list-todo');
             const doneList = document.getElementById('list-done');
 
-            // Ajout d'une petite animation d'échelle au clic
-            element.style.transform = 'scale(0.95)';
+            element.style.transform = 'scale(0.96)';
             setTimeout(() => {
                 if (element.classList.contains('done')) {
                     element.classList.remove('done');
@@ -91,83 +93,62 @@
                     element.classList.add('done');
                     doneList.appendChild(element);
                 }
-                element.style.transform = 'scale(1)';
-            }, 150);
+                element.style.transform = '';
+            }, 140);
         }
 
         function deleteTask(event, button) {
-            // Empêche le déclenchement du toggleTask (le clic sur l'élément parent)
             event.stopPropagation();
-            
             const item = button.closest('.todo-item');
-            
-            // Animation de disparition
+            item.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
             item.style.opacity = '0';
-            item.style.transform = 'translateX(20px)';
-            
+            item.style.transform = 'translateX(16px)';
             setTimeout(() => {
                 item.remove();
                 updateCounter();
-            }, 300);
+            }, 260);
         }
 
-        // --- Logique du Modal Custom ---
-        function openAddModal() {
-            const modal = document.getElementById('addTaskModal');
-            const input = document.getElementById('newTaskInput');
-            modal.classList.add('active');
+        function buildTaskElement(text) {
+            const newItem = document.createElement('div');
+            newItem.className = 'todo-item';
+            newItem.onclick = function() { toggleTask(this); };
+            newItem.style.opacity = '0';
+            newItem.style.transform = 'translateY(8px)';
+            newItem.innerHTML = `
+                <div class="custom-checkbox"></div>
+                <span class="todo-text">${text}</span>
+                <button class="delete-btn" onclick="deleteTask(event, this)" title="Supprimer">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            `;
+            return newItem;
+        }
+
+        function confirmInlineTask() {
+            const input = document.getElementById('inlineTaskInput');
+            const text = input.value.trim();
+            if (!text) { input.focus(); return; }
+
+            const todoList = document.getElementById('list-todo');
+            const newItem = buildTaskElement(text);
+            todoList.prepend(newItem);
+
+            requestAnimationFrame(() => {
+                newItem.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                newItem.style.opacity = '1';
+                newItem.style.transform = 'translateY(0)';
+            });
+
             input.value = '';
-            setTimeout(() => input.focus(), 100); // Focus après l'animation
+            input.focus();
+            updateCounter();
         }
 
-        function closeAddModal() {
-            const modal = document.getElementById('addTaskModal');
-            modal.classList.remove('active');
+        function handleInlineKeyPress(event) {
+            if (event.key === 'Enter') confirmInlineTask();
         }
 
-        function handleKeyPress(event) {
-            if (event.key === 'Enter') {
-                confirmAddTask();
-            }
-        }
-
-        function confirmAddTask() {
-            const input = document.getElementById('newTaskInput');
-            const taskText = input.value.trim();
-            
-            if (taskText !== "") {
-                const todoList = document.getElementById('list-todo');
-                
-                // Création du nouvel élément
-                const newItem = document.createElement('div');
-                newItem.className = 'todo-item';
-                newItem.onclick = function() { toggleTask(this); };
-                
-                // On met l'opacité à 0 d'abord pour l'animer
-                newItem.style.opacity = '0';
-                newItem.style.transform = 'translateY(10px)';
-                
-                newItem.innerHTML = `
-                    <div class="custom-checkbox"></div>
-                    <span class="todo-text">${taskText}</span>
-                    <button class="delete-btn" onclick="deleteTask(event, this)"><i class="bi bi-trash"></i></button>
-                `;
-                
-                todoList.appendChild(newItem);
-                
-                // Déclenche l'animation d'apparition
-                setTimeout(() => {
-                    newItem.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-                    newItem.style.opacity = '1';
-                    newItem.style.transform = 'translateY(0)';
-                }, 50);
-                
-                updateCounter();
-            }
-            closeAddModal();
-        }
-
-        // Initialisation du compteur au chargement
         document.addEventListener('DOMContentLoaded', updateCounter);
     </script>
 {% endblock %}

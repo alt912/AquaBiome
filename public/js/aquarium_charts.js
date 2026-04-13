@@ -4,16 +4,24 @@ function drawChart(selector, data, keys, colors) {
 
     d3.select(selector).selectAll("*").remove();
 
-    const margin = {top: 20, right: 30, bottom: 40, left: 50},
-          width = container.offsetWidth - margin.left - margin.right,
-          height = 250 - margin.top - margin.bottom;
+    // Récupère la largeur réelle — même si l'onglet est caché
+    let width = container.offsetWidth;
+    if (width <= 0) {
+        // Si le container est masqué (display:none), on mesure le parent visible
+        const parent = container.closest('.stat-card') || container.parentElement;
+        width = parent ? parent.offsetWidth - 40 : 300;
+    }
 
-    if (width <= 0) return;
+    const margin = { top: 20, right: 30, bottom: 40, left: 50 };
+    const chartWidth = width - margin.left - margin.right;
+    const chartHeight = 250 - margin.top - margin.bottom;
+
+    if (chartWidth <= 0) return;
 
     const svg = d3.select(selector)
         .append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
+        .attr("width", chartWidth + margin.left + margin.right)
+        .attr("height", chartHeight + margin.top + margin.bottom)
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
@@ -27,19 +35,19 @@ function drawChart(selector, data, keys, colors) {
 
     // --- BRIDAGE DE L'AXE Y À 40 ---
     const realMax = d3.max(formattedData, d => Math.max(...keys.map(k => d[k] || 0)));
-    const displayMax = Math.min(realMax, 40); 
+    const displayMax = Math.min(realMax, 40);
 
     const x = d3.scaleTime()
         .domain(d3.extent(formattedData, d => d.date))
-        .range([0, width]);
+        .range([0, chartWidth]);
 
     const y = d3.scaleLinear()
-        .domain([0, Math.max(displayMax * 1.1, 15)]) 
-        .range([height, 0]);
+        .domain([0, Math.max(displayMax * 1.1, 15)])
+        .range([chartHeight, 0]);
 
     svg.append("g")
-       .attr("transform", `translate(0,${height})`)
-       .call(d3.axisBottom(x).ticks(5).tickFormat(d3.timeFormat("%d/%m")));
+        .attr("transform", `translate(0,${chartHeight})`)
+        .call(d3.axisBottom(x).ticks(5).tickFormat(d3.timeFormat("%d/%m")));
 
     svg.append("g").call(d3.axisLeft(y));
 
@@ -66,42 +74,77 @@ function drawChart(selector, data, keys, colors) {
     });
 }
 
+// ----------------------------------------------------------------
+// initCharts : dessine tous les graphiques, même ceux dans un onglet
+// masqué, en les rendant temporairement visibles le temps de mesurer.
+// ----------------------------------------------------------------
 function initCharts() {
-    if (typeof rawData !== 'undefined' && rawData.length > 0) {
-        drawChart("#chart_gh", rawData, ["gh"], ["#7d7bc9"]);
-        drawChart("#chart_ph_kh", rawData, ["ph", "kh"], ["#ff6f9c", "#4e73df"]);
-        drawChart("#chart_toxic", rawData, ["nitrites", "ammonium"], ["#e74a3b", "#f6c23e"]);
-    }
+    if (typeof rawData === 'undefined' || rawData.length === 0) return;
+
+    const allTabContents = document.querySelectorAll('.tab-content');
+
+    // Rend tous les onglets temporairement visibles (off-screen)
+    allTabContents.forEach(el => {
+        if (!el.classList.contains('active')) {
+            el.style.visibility = 'hidden';
+            el.style.position = 'absolute';
+            el.style.display = 'block';
+        }
+    });
+
+    // Dessine les 3 graphiques avec une vraie largeur
+    drawChart("#chart_gh", rawData, ["gh"], ["#7d7bc9"]);
+    drawChart("#chart_ph_kh", rawData, ["ph", "kh"], ["#ff6f9c", "#4e73df"]);
+    drawChart("#chart_toxic", rawData, ["nitrites", "ammonium"], ["#e74a3b", "#f6c23e"]);
+
+    // Remet les onglets inactifs dans leur état caché
+    allTabContents.forEach(el => {
+        if (!el.classList.contains('active')) {
+            el.style.visibility = '';
+            el.style.position = '';
+            el.style.display = '';
+        }
+    });
 }
 
-window.addEventListener('load', initCharts);
+// ----------------------------------------------------------------
+// Initialisation au chargement de la page
+// ----------------------------------------------------------------
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCharts);
+} else {
+    initCharts(); // DOM déjà prêt (scripts sans defer, placés en fin de body)
+}
 
-// Throttle: on ne redessine pas plus d'une fois toutes les 250ms lors du resize
+// Redessine lors du resize (throttle 250ms)
 let resizeTimer;
-window.addEventListener('resize', function() {
+window.addEventListener('resize', function () {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(initCharts, 250);
 });
 
+// ----------------------------------------------------------------
+// Gestion des onglets
+// ----------------------------------------------------------------
 function openTab(evt, tabName) {
-    var i, tabcontent, tablinks;
-    
     // Cache tous les onglets
-    tabcontent = document.getElementsByClassName("tab-content");
-    for (i = 0; i < tabcontent.length; i++) {
-        tabcontent[i].style.display = "none";
-    }
+    document.querySelectorAll('.tab-content').forEach(el => {
+        el.style.display = '';
+        el.classList.remove('active');
+    });
 
     // Désactive les boutons
-    tablinks = document.getElementsByClassName("tab-btn");
-    for (i = 0; i < tablinks.length; i++) {
-        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    // Active l'onglet sélectionné
+    const target = document.getElementById(tabName);
+    if (target) {
+        target.classList.add('active');
     }
+    evt.currentTarget.classList.add('active');
 
-    // Affiche l'onglet actuel
-    document.getElementById(tabName).style.display = "block";
-    evt.currentTarget.className += " active";
-
-    // Redessine le graphique pour qu'il prenne toute la largeur
+    // Redessine pour prendre la bonne largeur
     initCharts();
 }
