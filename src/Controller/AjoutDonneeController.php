@@ -39,9 +39,8 @@ final class AjoutDonneeController extends AbstractController
             }
 
             $mesure = new Mesure();
-            $dateForm = $request->request->get('date');
-            $dateSaisie = new \DateTime($dateForm ?: 'now');
-            $dateSaisie->setTime((int) date('H'), (int) date('i'), (int) date('s'));
+            // On force la date à AUJOURD'HUI (Sécurité demandée)
+            $dateSaisie = new \DateTime();
 
             $mesure->setDateSaisie($dateSaisie);
             $mesure->setTemperature((float) $request->request->get('temperature'));

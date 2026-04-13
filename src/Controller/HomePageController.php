@@ -9,38 +9,96 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
+use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
+use Symfony\UX\Chartjs\Model\Chart;
+
 final class HomePageController extends AbstractController
 {
     #[Route('/', name: 'app_root')]
     #[Route('/homePage', name: 'homePage')]
-    public function index(MesureRepository $mesureRepo, AlerteRepository $alerteRepo, TacheRepository $tacheRepo): Response
+    public function index(MesureRepository $mesureRepo, AlerteRepository $alerteRepo, TacheRepository $tacheRepo, ChartBuilderInterface $chartBuilder): Response
     {
         // 1. On récupère la toute dernière mesure pour l'affichage des chiffres clés
         $derniereMesure = $mesureRepo->findOneBy([], ['dateSaisie' => 'DESC']);
 
-        // 2. On récupère TOUTES les mesures triées par date pour les graphiques D3.js
+        // 2. On récupère TOUTES les mesures triées par date
         $toutesLesMesures = $mesureRepo->findBy([], ['dateSaisie' => 'ASC']);
 
-        $historiqueData = [];
+        // Préparation des données pour UX Chart.js
+        $labels = [];
+        $dataGh = [];
+        $dataPh = [];
+        $dataKh = [];
+        $dataNitrites = [];
+        $dataAmmonium = [];
 
-        // 3. On prépare les données pour le JavaScript
         foreach ($toutesLesMesures as $m) {
-            $historiqueData[] = [
-                'date' => $m->getDateSaisie() ? $m->getDateSaisie()->format('Y-m-d H:i') : null,
-                'gh' => $m->getGh(),
-                'ph' => $m->getPh(),
-                'kh' => $m->getKh(),
-                'nitrites' => $m->getNitrites(),
-                'ammonium' => $m->getAmmonium(),
-            ];
+            $labels[] = $m->getDateSaisie() ? $m->getDateSaisie()->format('d/m H:i') : '';
+            $dataGh[] = $m->getGh();
+            $dataPh[] = $m->getPh();
+            $dataKh[] = $m->getKh();
+            $dataNitrites[] = $m->getNitrites();
+            $dataAmmonium[] = $m->getAmmonium();
         }
 
-        // 4. Gestion des ALERTES (Récupération intelligente)
+        // --- GRAPHIQUE GH ---
+        $chartGh = $chartBuilder->createChart(Chart::TYPE_LINE);
+        $chartGh->setData([
+            'labels' => $labels,
+            'datasets' => [
+                [
+                    'label' => 'Dureté (GH)',
+                    'backgroundColor' => 'rgba(9, 132, 227, 0.2)',
+                    'borderColor' => 'rgb(9, 132, 227)',
+                    'data' => $dataGh,
+                    'tension' => 0.4,
+                ],
+            ],
+        ]);
+
+        // --- GRAPHIQUE PH / KH ---
+        $chartPhKh = $chartBuilder->createChart(Chart::TYPE_LINE);
+        $chartPhKh->setData([
+            'labels' => $labels,
+            'datasets' => [
+                [
+                    'label' => 'pH',
+                    'borderColor' => 'rgb(255, 118, 117)',
+                    'data' => $dataPh,
+                    'yAxisID' => 'y',
+                ],
+                [
+                    'label' => 'KH',
+                    'borderColor' => 'rgb(0, 184, 148)',
+                    'data' => $dataKh,
+                    'yAxisID' => 'y1',
+                ],
+            ],
+        ]);
+
+        // --- GRAPHIQUE TOXINES ---
+        $chartToxic = $chartBuilder->createChart(Chart::TYPE_BAR);
+        $chartToxic->setData([
+            'labels' => $labels,
+            'datasets' => [
+                [
+                    'label' => 'Nitrites (NO2)',
+                    'backgroundColor' => 'rgb(214, 48, 49)',
+                    'data' => $dataNitrites,
+                ],
+                [
+                    'label' => 'Ammonium (NH4)',
+                    'backgroundColor' => 'rgb(225, 112, 85)',
+                    'data' => $dataAmmonium,
+                ],
+            ],
+        ]);
+
+        // 4. Gestion des ALERTES
         $latestMesureId = $derniereMesure ? $derniereMesure->getId() : null;
         $alertes = $alerteRepo->findRelevantAlerts($latestMesureId);
 
-        // 5. Gestion des TÂCHES (Récurrentes ou non)
-        // On récupère les tâches qui sont "À faire" ET dont la date est dépassée ou aujourd'hui
+        // 5. Gestion des TÂCHES
         $taches = $tacheRepo->createQueryBuilder('t')
             ->where('t.status != :done')
             ->andWhere('t.deadline <= :now')
@@ -51,27 +109,25 @@ final class HomePageController extends AbstractController
             ->getQuery()
             ->getResult();
 
-        // 6. Conversion des TÂCHES EN RETARD en ALERTES
+        // 6. Conversion des TÂCHES EN RETARD
         $now = new \DateTime();
         foreach ($taches as $tache) {
-            // Si la date limite est passée (hier ou avant)
             if ($tache->getDeadline() < $now->setTime(0, 0, 0)) {
                 $alerteRetard = new \App\Entity\Alerte();
                 $alerteRetard->setNom("RETARD TÂCHE");
                 $alerteRetard->setMessageAlerte("La tâche '" . $tache->getTitre() . "' est en retard ! (prévue le " . $tache->getDeadline()->format('d/m/Y') . ")");
                 $alerteRetard->setDateAlerte(new \DateTime());
-
-                // On ajoute cette fausse alerte à la liste pour qu'elle s'affiche en rouge
                 $alertes[] = $alerteRetard;
             }
         }
 
-        // 7. On envoie les données à la vue
         return $this->render('home_page/index.html.twig', [
             'mesure' => $derniereMesure,
             'alertes' => $alertes,
             'taches' => $taches,
-            'chartData' => json_encode($historiqueData),
+            'chartGh' => $chartGh,
+            'chartPhKh' => $chartPhKh,
+            'chartToxic' => $chartToxic,
         ]);
     }
 

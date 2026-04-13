@@ -40,10 +40,11 @@
         <form action="{{ path('ajoutDonnee') }}" method="POST" data-turbo="false" id="form-mesure">
             
             <div class="section-title">Informations Générales</div>
-            <div class="form-group">
+            <div class="form-group" style="opacity: 0.8;">
                 <div class="label-row">Date de la saisie</div>
-                 <input type="date" name="date" value="{{ "now"|date("Y-m-d") }}" class="input-readonly" readonly tabindex="-1">
-                
+                <div class="form-input" style="background: rgba(255,255,255,0.1); border: 1px dashed rgba(255,255,255,0.3); color: #fff;">
+                    <i class="bi bi-calendar-check"></i> Aujourd'hui ({{ "now"|date("d/m/Y") }})
+                </div>
             </div>
 
             <div class="section-title">Chimie de l'eau</div>
