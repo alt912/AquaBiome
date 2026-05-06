@@ -28,6 +28,9 @@ class Alerte
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $dateAlerte = null;
 
+    #[ORM\Column(type: 'boolean', options: ['default' => false])]
+    private bool $vue = false;
+
     #[ORM\ManyToOne(inversedBy: 'alertes')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Aquarium $aquarium = null;
@@ -39,7 +42,8 @@ class Alerte
     {
         $this->mesures = new ArrayCollection();
         // La date se met automatiquement à "maintenant"
-        $this->dateAlerte = new \DateTime(); 
+        $this->dateAlerte = new \DateTime();
+        $this->vue = false;
     }
 
     public function getId(): ?int
@@ -105,5 +109,16 @@ class Alerte
     public function getMesures(): Collection
     {
         return $this->mesures;
+    }
+
+    public function isVue(): bool
+    {
+        return $this->vue;
+    }
+
+    public function setVue(bool $vue): static
+    {
+        $this->vue = $vue;
+        return $this;
     }
 }

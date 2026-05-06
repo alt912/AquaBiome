@@ -1,4 +1,6 @@
 <?php
+$_SERVER['HTTPS'] = 'on';
+
 
 use App\Kernel;
 

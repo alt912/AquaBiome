@@ -15,69 +15,280 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('styles/login.css') }}">
     <style>
-        .edit-profile-container {
-            padding: 20px;
-            max-width: 600px;
-            margin: 0 auto;
+        .edit-profile-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 24px 16px 48px;
+            gap: 20px;
         }
-        .form-group {
-            margin-bottom: 20px;
-            text-align: left;
+
+        .edit-profile-card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 24px;
+            padding: 32px 28px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 8px 32px rgba(63, 81, 181, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.6);
         }
-        .form-label {
-            font-weight: bold;
-            display: block;
-            margin-bottom: 8px;
-            color: #333;
-        }
-        .current-avatar {
+
+        .edit-profile-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #1a1a2e;
             text-align: center;
-            margin-bottom: 20px;
+            margin: 0 0 28px;
+            letter-spacing: -0.3px;
         }
-        .current-avatar img {
+
+        /* ── Avatar cliquable ── */
+        .avatar-picker {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 28px;
+        }
+
+        .avatar-ring {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            cursor: pointer;
+        }
+
+        .avatar-ring img,
+        .avatar-ring .avatar-placeholder {
             width: 100px;
             height: 100px;
             border-radius: 50%;
             object-fit: cover;
             border: 3px solid #3f51b5;
+            background: #eef0fb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.8rem;
+            color: #3f51b5;
+            transition: filter 0.2s;
         }
+
+        .avatar-ring:hover img,
+        .avatar-ring:hover .avatar-placeholder {
+            filter: brightness(0.75);
+        }
+
+        .avatar-edit-badge {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            background: #3f51b5;
+            color: white;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            box-shadow: 0 2px 6px rgba(63, 81, 181, 0.4);
+            pointer-events: none;
+        }
+
+        .avatar-hint {
+            font-size: 0.78rem;
+            color: #888;
+            text-align: center;
+        }
+
+        /* ── Champs ── */
+        .field-group {
+            margin-bottom: 20px;
+        }
+
+        .field-group label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 7px;
+            letter-spacing: 0.2px;
+        }
+
+        .field-group input[type="text"],
+        .field-group input[type="email"] {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1.5px solid #dde1f0;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            color: #1a1a2e;
+            background: #f8f9fe;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            box-sizing: border-box;
+        }
+
+        .field-group input[type="text"]:focus,
+        .field-group input[type="email"]:focus {
+            border-color: #3f51b5;
+            box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.12);
+            background: #fff;
+        }
+
+        .field-hint {
+            font-size: 0.74rem;
+            color: #aaa;
+            margin-top: 5px;
+        }
+
+        /* ── Boutons ── */
+        .btn-submit {
+            width: 100%;
+            padding: 13px;
+            background: linear-gradient(135deg, #3f51b5, #5c6bc0);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: transform 0.15s, box-shadow 0.2s;
+            box-shadow: 0 4px 14px rgba(63, 81, 181, 0.3);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(63, 81, 181, 0.4);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .link-cancel {
+            display: block;
+            text-align: center;
+            margin-top: 14px;
+            font-size: 0.87rem;
+            color: #888;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .link-cancel:hover {
+            color: #3f51b5;
+        }
+
+        /* Flash messages */
+        .flash-success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 0.88rem;
+            margin-bottom: 16px;
+            border-left: 3px solid #43a047;
+        }
+        .flash-error {
+            background: #ffebee;
+            color: #c62828;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 0.88rem;
+            margin-bottom: 16px;
+            border-left: 3px solid #e53935;
+        }
+
+        /* On cache le vrai input file */
+        #avatarFile { display: none; }
     </style>
 {% endblock %}
 
 {% block body %}
-<div class="edit-profile-container">
-    <div class="page">
-        <h1>Modifier mon profil</h1>
+<div class="edit-profile-wrapper">
+    <div class="edit-profile-card">
 
-        <div class="current-avatar">
-            {% if app.user.avatar %}
-                <img src="{{ asset('uploads/avatars/' ~ app.user.avatar) }}" alt="Avatar actuel">
-                <p><small>Image actuelle</small></p>
-            {% else %}
-                <div style="font-size: 4rem; color: #3f51b5;"><i class="bi bi-person-bounding-box"></i></div>
-                <p><small>Aucune image définie</small></p>
-            {% endif %}
-        </div>
-        
-        {{ form_start(userForm) }}
-            <div class="form-group">
-                {{ form_label(userForm.nom, 'Votre Nom', {'label_attr': {'class': 'form-label'}}) }}
+        <h1 class="edit-profile-title">Modifier mon profil</h1>
+
+        {# Flash messages #}
+        {% for msg in app.flashes('success') %}
+            <div class="flash-success"><i class="bi bi-check-circle"></i> {{ msg }}</div>
+        {% endfor %}
+        {% for msg in app.flashes('error') %}
+            <div class="flash-error"><i class="bi bi-exclamation-circle"></i> {{ msg }}</div>
+        {% endfor %}
+
+        {{ form_start(userForm, {'attr': {'enctype': 'multipart/form-data', 'id': 'edit-profile-form'}}) }}
+
+            {# ── Avatar cliquable ── #}
+            <div class="avatar-picker">
+                <div class="avatar-ring" id="avatar-trigger" title="Changer la photo">
+                    {% if app.user and app.user.avatar %}
+                        <img id="avatar-preview" src="{{ asset('uploads/avatars/' ~ app.user.avatar) }}" alt="Avatar actuel">
+                    {% else %}
+                        <div class="avatar-placeholder" id="avatar-preview-placeholder">
+                            <i class="bi bi-person-bounding-box"></i>
+                        </div>
+                    {% endif %}
+                    <div class="avatar-edit-badge"><i class="bi bi-camera-fill"></i></div>
+                </div>
+                <span class="avatar-hint">Appuie pour changer la photo<br><small>JPG, PNG, WEBP · max 5 Mo</small></span>
+            </div>
+
+            {# Input file caché lié à l'avatar-ring #}
+            {{ form_widget(userForm.avatarFile, {'id': 'avatarFile'}) }}
+
+            {# ── Nom ── #}
+            <div class="field-group">
+                {{ form_label(userForm.nom, 'Votre Nom') }}
                 {{ form_widget(userForm.nom) }}
                 {{ form_errors(userForm.nom) }}
             </div>
 
-            <div class="form-group">
-                {{ form_label(userForm.avatarFile, 'Nouvelle photo de profil', {'label_attr': {'class': 'form-label'}}) }}
-                {{ form_widget(userForm.avatarFile) }}
-                {{ form_errors(userForm.avatarFile) }}
-                <div class="form-text text-muted">Formats acceptés : JPG, PNG, WEBP (Max 5Mo)</div>
-            </div>
+            <button type="submit" class="btn-submit">Enregistrer les modifications</button>
 
-            <button type="submit" class="btn">Enregistrer les modifications</button>
-            <a href="{{ path('gestion_compte') }}" style="display: block; margin-top: 15px; color: #666;">Annuler</a>
         {{ form_end(userForm) }}
+
+        <a href="{{ path('gestion_compte') }}" class="link-cancel">Annuler</a>
+
     </div>
 </div>
+
+<script>
+    // Ouvre le sélecteur de fichier au clic sur l'avatar
+    document.getElementById('avatar-trigger').addEventListener('click', function () {
+        document.getElementById('avatarFile').click();
+    });
+
+    // Prévisualise l'image sélectionnée instantanément
+    document.getElementById('avatarFile').addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function (ev) {
+            // Remplace placeholder ou img existant
+            const ring = document.getElementById('avatar-trigger');
+            let img = document.getElementById('avatar-preview');
+            const placeholder = document.getElementById('avatar-preview-placeholder');
+
+            if (placeholder) placeholder.remove();
+
+            if (!img) {
+                img = document.createElement('img');
+                img.id = 'avatar-preview';
+                img.alt = 'Aperçu';
+                ring.insertBefore(img, ring.querySelector('.avatar-edit-badge'));
+            }
+            img.src = ev.target.result;
+            img.style.cssText = 'width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid #3f51b5;';
+        };
+        reader.readAsDataURL(file);
+    });
+</script>
 {% endblock %}

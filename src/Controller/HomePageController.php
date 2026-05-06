@@ -6,8 +6,10 @@ use App\Repository\AlerteRepository;
 use App\Repository\MesureRepository;
 use App\Repository\TacheRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Doctrine\ORM\EntityManagerInterface;
 
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Symfony\UX\Chartjs\Model\Chart;
@@ -157,5 +159,12 @@ final class HomePageController extends AbstractController
         $em->flush();
 
         return $this->redirectToRoute('homePage');
+    }
+
+    #[Route('/alerte/{id}/dismiss', name: 'app_alerte_dismiss', methods: ['POST'])]
+    public function dismissAlerte(int $id, AlerteRepository $alerteRepo): JsonResponse
+    {
+        $alerteRepo->dismissAlert($id);
+        return new JsonResponse(['ok' => true]);
     }
 }

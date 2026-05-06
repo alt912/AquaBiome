@@ -27,42 +27,42 @@ final class ModificationDonneeController extends AbstractController
 
             // 2. Comparaison et Mise à jour
             $oldTemp = $mesure->getTemperature();
-            $newTemp = (float) $request->request->get('temperature');
+            $newTemp = (float) str_replace(',', '.', $request->request->get('temperature'));
             if ($oldTemp !== $newTemp) {
                 $mesure->setTemperature($newTemp);
                 $changements[] = "Temp: $oldTemp -> $newTemp °C";
             }
 
             $oldPh = $mesure->getPh();
-            $newPh = (float) $request->request->get('ph');
+            $newPh = (float) str_replace(',', '.', $request->request->get('ph'));
             if ($oldPh !== $newPh) {
                 $mesure->setPh($newPh);
                 $changements[] = "pH: $oldPh -> $newPh";
             }
 
             $oldGh = $mesure->getGh();
-            $newGh = (int) $request->request->get('gh');
+            $newGh = (int) round((float) str_replace(',', '.', $request->request->get('gh')));
             if ($oldGh !== $newGh) {
                 $mesure->setGh($newGh);
                 $changements[] = "GH: $oldGh -> $newGh";
             }
 
             $oldKh = $mesure->getKh();
-            $newKh = (int) $request->request->get('kh');
+            $newKh = (int) round((float) str_replace(',', '.', $request->request->get('kh')));
             if ($oldKh !== $newKh) {
                 $mesure->setKh($newKh);
                 $changements[] = "KH: $oldKh -> $newKh";
             }
 
             $oldNitrites = $mesure->getNitrites();
-            $newNitrites = (float) $request->request->get('nitrite');
+            $newNitrites = (float) str_replace(',', '.', $request->request->get('nitrite'));
             if ($oldNitrites !== $newNitrites) {
                 $mesure->setNitrites($newNitrites);
                 $changements[] = "NO2: $oldNitrites -> $newNitrites";
             }
 
             $oldAmmonium = $mesure->getAmmonium();
-            $newAmmonium = (float) $request->request->get('ammonium');
+            $newAmmonium = (float) str_replace(',', '.', $request->request->get('ammonium'));
             if ($oldAmmonium !== $newAmmonium) {
                 $mesure->setAmmonium($newAmmonium);
                 $changements[] = "NH4: $oldAmmonium -> $newAmmonium";

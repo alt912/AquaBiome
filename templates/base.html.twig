@@ -6,9 +6,9 @@
     <title>{% block title %}AquaBiome{% endblock %}</title>
     <link rel="icon" type="image/png" href="{{ asset('image/logo_aquabiome.png') }}">
 
-    {# Preload des ressources critiques pour un rendu plus rapide #}
-    <link rel="preload" href="/styles/base.css" as="style">
-    <link rel="preload" href="/image/fondaquabiome.webp" as="image" type="image/webp">
+    {# Preload corrigé avec asset() #}
+    <link rel="preload" href="{{ asset('styles/base.css') }}" as="style">
+    <link rel="preload" href="{{ asset('image/fondaquabiome.webp') }}" as="image" type="image/webp">
     <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/fonts/bootstrap-icons.woff2" as="font" type="font/woff2" crossorigin="anonymous">
     {# Empêche le flash de contenu non stylisé (FOUC) #}
     <style>body { visibility: hidden; }</style>

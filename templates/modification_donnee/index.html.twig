@@ -36,15 +36,15 @@
     <div class="page">
         <h2>Corriger la mesure du {{ mesure.dateSaisie|date('d/m/Y à H:i') }}</h2>
         
-        <form method="post">
+        <form method="post" data-turbo="false">
             <div class="form-group">
                 <label class="form-label">Température (°C)</label>
-                <input type="number" step="0.1" name="temperature" class="form-control" value="{{ mesure.temperature }}" required>
+                <input type="number" step="0.1" name="temperature" class="form-control" value="{{ mesure.temperature|number_format(1, '.', '') }}" required>
             </div>
 
             <div class="form-group">
                 <label class="form-label">pH</label>
-                <input type="number" step="0.1" name="ph" class="form-control" value="{{ mesure.ph }}" required>
+                <input type="number" step="0.1" name="ph" class="form-control" value="{{ mesure.ph|number_format(1, '.', '') }}" required>
             </div>
 
             <div class="form-group">
@@ -59,12 +59,12 @@
 
             <div class="form-group">
                 <label class="form-label">Nitrites (mg/L)</label>
-                <input type="number" step="0.01" name="nitrite" class="form-control" value="{{ mesure.nitrites }}" required>
+                <input type="number" step="0.01" name="nitrite" class="form-control" value="{{ mesure.nitrites|number_format(2, '.', '') }}" required>
             </div>
 
             <div class="form-group">
                 <label class="form-label">Ammonium (mg/L)</label>
-                <input type="number" step="0.01" name="ammonium" class="form-control" value="{{ mesure.ammonium }}" required>
+                <input type="number" step="0.01" name="ammonium" class="form-control" value="{{ mesure.ammonium|number_format(2, '.', '') }}" required>
             </div>
 
             <button type="submit" class="btn">Enregistrer les corrections</button>

@@ -103,22 +103,22 @@
 				</div>
 			{% endif %}
 
-			{# -- NOUVEAU : Affichage des ALERTES BOOTSTRAP (Depuis la BDD) -- #}
-			{% if alertes is defined and alertes is not empty %}
-				<div class="mb-4">
-					{% for alerte in alertes %}
-						<div class="alert alert-danger alert-dismissible fade show" role="alert">
-							<strong>{{ alerte.nom }}
-								:</strong>
-							{{ alerte.messageAlerte }}
-							<br>
-							<small class="text-muted">Le
-								{{ alerte.dateAlerte|date('d/m/Y à H:i') }}</small>
-							<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-						</div>
-					{% endfor %}
-				</div>
-			{% endif %}
+			{# -- ALERTES BDD -- #}
+		{% if alertes is defined and alertes is not empty %}
+			<div class="mb-4" id="alertes-container">
+				{% for alerte in alertes %}
+					<div class="alert alert-danger alert-dismissible fade show" role="alert" id="alerte-{{ alerte.id }}">
+						<strong>{{ alerte.nom }} :</strong>
+						{{ alerte.messageAlerte }}
+						<br>
+						<small class="text-muted">Le {{ alerte.dateAlerte|date('d/m/Y à H:i') }}</small>
+						<button type="button" class="btn-close" aria-label="Fermer"
+							onclick="dismissAlerte({{ alerte.id }}, '{{ path('app_alerte_dismiss', {id: alerte.id}) }}')">
+						</button>
+					</div>
+				{% endfor %}
+			</div>
+		{% endif %}
 
 			<div class="alert-card">
 				<h3>Dernière activité</h3>
@@ -219,6 +219,21 @@
 				document.getElementById(tabName).classList.add("active");
 				evt.currentTarget.classList.add("active");
 			}
-		</script>
 
+			function dismissAlerte(id, url) {
+				// Appel AJAX pour marquer l'alerte comme vue en BDD
+				fetch(url, {
+					method: 'POST',
+					headers: { 'X-Requested-With': 'XMLHttpRequest' }
+				}).catch(() => {}); // Silencieux si erreur réseau
+
+				// Masque l'alerte immédiatement côté UI
+				const el = document.getElementById('alerte-' + id);
+				if (el) {
+					el.style.transition = 'opacity 0.3s ease';
+					el.style.opacity = '0';
+					setTimeout(() => el.remove(), 300);
+				}
+			}
+		</script>
 	{% endblock %}

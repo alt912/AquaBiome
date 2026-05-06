@@ -1,15 +1,4 @@
-/* Global Styles */
-body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Poppins', sans-serif;
-    /* Un fond légèrement teinté pour rappeler l'univers */
-    background-color: #ffeef2;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-}
+/* Styles spécifiques aux pages de type login/edit */
 
 /* Container principal centré */
 .page-container {

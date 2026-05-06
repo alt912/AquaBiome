@@ -41,22 +41,39 @@ class AlerteRepository extends ServiceEntityRepository
     //        ;
     //    }
     /**
-     * Finds manual alerts (no associated measure) AND the alert for the specific latest measure.
+     * Finds relevant alerts that haven't been dismissed (vue = false).
      * @return Alerte[]
      */
     public function findRelevantAlerts(?int $latestMesureId): array
     {
         $qb = $this->createQueryBuilder('a')
             ->leftJoin('a.mesures', 'm')
-            ->where('m.id IS NULL'); // Manual alerts (no linked measure)
+            ->andWhere('a.vue = :notVue')
+            ->setParameter('notVue', false)
+            ->andWhere('m.id IS NULL'); // alertes manuelles (sans mesure liée)
 
         if ($latestMesureId) {
-            $qb->orWhere('m.id = :latestId')
+            $qb->orWhere('m.id = :latestId AND a.vue = false')
                 ->setParameter('latestId', $latestMesureId);
         }
 
         return $qb->orderBy('a.dateAlerte', 'DESC')
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * Mark an alert as dismissed.
+     */
+    public function dismissAlert(int $id): void
+    {
+        $this->createQueryBuilder('a')
+            ->update()
+            ->set('a.vue', ':true')
+            ->setParameter('true', true)
+            ->where('a.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->execute();
     }
 }

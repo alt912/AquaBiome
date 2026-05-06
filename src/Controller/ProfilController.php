@@ -2,19 +2,23 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
+use App\Form\UserType;
+use App\Repository\MesureRepository;
+use App\Repository\UserRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 final class ProfilController extends AbstractController
 {
     #[Route('/profil', name: 'gestion_compte')]
-
-    //#[IsGranted('ROLE_USER')]
-    public function index(\App\Repository\MesureRepository $mesureRepo): Response
+    public function index(MesureRepository $mesureRepo): Response
     {
-        // Récupération de l'utilisateur connecté
         $user = $this->getUser();
         $mesures = [];
 
@@ -23,49 +27,64 @@ final class ProfilController extends AbstractController
         }
 
         return $this->render('profil/index.html.twig', [
-            'user' => $user, 
+            'user'    => $user,
             'mesures' => $mesures,
         ]);
     }
 
     #[Route('/profil/edit', name: 'app_profil_edit')]
-    //#[IsGranted('ROLE_USER')]
-    public function editProfile(\Symfony\Component\HttpFoundation\Request $request, \Doctrine\ORM\EntityManagerInterface $entityManager, \Symfony\Component\String\Slugger\SluggerInterface $slugger): Response
-    {
-        $user = $this->getUser();
-        $form = $this->createForm(\App\Form\UserType::class, $user);
+    public function editProfile(
+        Request                $request,
+        EntityManagerInterface $entityManager,
+        SluggerInterface       $slugger,
+        UserRepository         $userRepository,
+        TokenStorageInterface  $tokenStorage,
+    ): Response {
+        /** @var User $sessionUser */
+        $sessionUser = $this->getUser();
+
+        // Recharge l'user depuis la BDD pour que Doctrine le track correctement
+        $user = $userRepository->find($sessionUser->getId());
+
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var \Symfony\Component\HttpFoundation\File\UploadedFile $avatarFile */
+
+            /** @var \Symfony\Component\HttpFoundation\File\UploadedFile|null $avatarFile */
             $avatarFile = $form->get('avatarFile')->getData();
 
-            // Si un fichier est uploadé
             if ($avatarFile) {
                 $originalFilename = pathinfo($avatarFile->getClientOriginalName(), PATHINFO_FILENAME);
-                // On inclut le nom du fichier dans l'URL de manière sécurisée
-                $safeFilename = $slugger->slug($originalFilename);
-                $newFilename = $safeFilename.'-'.uniqid().'.'.$avatarFile->guessExtension();
+                $safeFilename     = $slugger->slug($originalFilename);
+                $newFilename      = $safeFilename . '-' . uniqid() . '.' . $avatarFile->guessExtension();
 
-                // On déplace le fichier dans le répertoire où sont stockés les avatars
                 try {
                     $avatarFile->move(
                         $this->getParameter('avatars_directory'),
                         $newFilename
                     );
                 } catch (\Symfony\Component\HttpFoundation\File\Exception\FileException $e) {
-                    // ... gérer l'exception si quelque chose se passe mal pendant l'upload
-                    $this->addFlash('error', "Une erreur est survenue lors de l'upload de l'image.");
+                    $this->addFlash('error', "Erreur lors de l'upload de l'image.");
                     return $this->redirectToRoute('app_profil_edit');
                 }
 
-                // On met à jour la propriété 'avatar' pour stocker le nom du fichier PDF
-                // au lieu de son contenu
                 $user->setAvatar($newFilename);
             }
 
-            $entityManager->persist($user);
+            // Sauvegarde en BDD
             $entityManager->flush();
+
+            // Rafraîchit le token de sécurité pour que app.user reflète les nouveaux champs
+            $currentToken = $tokenStorage->getToken();
+            if ($currentToken) {
+                $currentToken->setUser($user);
+                $tokenStorage->setToken($currentToken);
+            }
 
             $this->addFlash('success', 'Profil mis à jour avec succès !');
 

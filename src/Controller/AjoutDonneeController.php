@@ -17,7 +17,7 @@ final class AjoutDonneeController extends AbstractController
     public function index(Request $request, EntityManagerInterface $em, AquariumRepository $aquariumRepo): Response
     {
         if ($request->isMethod('POST')) {
-            $ghSaisi = (float) $request->request->get('gh');
+            $ghSaisi = (float) str_replace(',', '.', $request->request->get('gh'));
 
             // --- SÉCURITÉ SERVEUR ---
             if ($ghSaisi > 100) {
@@ -43,15 +43,15 @@ final class AjoutDonneeController extends AbstractController
             $dateSaisie = new \DateTime();
 
             $mesure->setDateSaisie($dateSaisie);
-            $mesure->setTemperature((float) $request->request->get('temperature'));
-            $mesure->setPh((float) $request->request->get('ph'));
-            $mesure->setChlore((float) $request->request->get('chlore'));
+            $mesure->setTemperature((float) str_replace(',', '.', $request->request->get('temperature')));
+            $mesure->setPh((float) str_replace(',', '.', $request->request->get('ph')));
+            $mesure->setChlore((float) str_replace(',', '.', $request->request->get('chlore')));
             $mesure->setGh($ghSaisi);
-            $mesure->setKh((int) $request->request->get('kh'));
+            $mesure->setKh((int) round((float) str_replace(',', '.', $request->request->get('kh'))));
 
             // On s'assure que le nom correspond au formulaire ('nitrite' dans le twig)
-            $mesure->setNitrites((float) $request->request->get('nitrite'));
-            $mesure->setAmmonium((float) $request->request->get('ammonium'));
+            $mesure->setNitrites((float) str_replace(',', '.', $request->request->get('nitrite')));
+            $mesure->setAmmonium((float) str_replace(',', '.', $request->request->get('ammonium')));
 
             $mesure->setAquarium($aquarium);
             $mesure->setUser($this->getUser());
